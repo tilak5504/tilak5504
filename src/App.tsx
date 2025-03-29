@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Github, Mail, Linkedin, PencilRuler, Code, Palette, ExternalLink, Cpu, Download, Building2, ChevronDown, Image, Film, Youtube, Instagram } from 'lucide-react';
+import { Mail, Linkedin, Download, ChevronDown, Image, Youtube, Film, Instagram } from 'lucide-react';
 
 interface WorkItem {
   title: string;
@@ -592,8 +592,7 @@ function App() {
 }
 
 export default App;
-var _c;
-$RefreshReg$(_c, "App");
-if (import.meta.hot && !inWebWorker) {
-  window.$RefreshReg$ = prevRefreshReg;
+
+if (import.meta.env.MODE === "development" && import.meta.hot) {
+  import.meta.hot.accept();
 }

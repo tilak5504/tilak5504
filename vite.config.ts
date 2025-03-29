@@ -2,18 +2,22 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  plugins: [react()],
-  base: './', // Ensures proper asset paths
+  plugins: [
+    react({
+      fastRefresh: false, // Disable React Fast Refresh in production
+    }),
+  ],
+  base: './', // Ensures correct asset paths for deployment
   define: {
     'process.env.NODE_ENV': '"production"',
-  }, // <-- Fixed missing closing brace
+  },
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
   build: {
     outDir: 'dist',
-    minify: 'esbuild',  // Ensures a minified production build
-    sourcemap: false,    // Removes unnecessary debugging info
+    minify: 'esbuild',  // Minifies the production build
+    sourcemap: false,   // Removes debugging info
     rollupOptions: {
       output: {
         manualChunks: {

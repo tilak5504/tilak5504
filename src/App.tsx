@@ -572,7 +572,7 @@ function App() {
           </div>
         </section>
 
-        <footer className="py-20 px-4" id="contact">
+        <footer className="py-20 px-4" id="contact us">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold mb-6">Let's Connect</h2>
             <p className="text-xl mb-8">

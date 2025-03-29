@@ -287,6 +287,7 @@ function App() {
       </nav>
 
       <div className="relative z-10">
+      <header id="about" className="min-h-screen flex items-center justify-center px-4 pt-20">
         <header className="min-h-screen flex items-center justify-center px-4 pt-20">
           <div className="max-w-4xl text-center">
             <div className="mb-8 relative inline-block">

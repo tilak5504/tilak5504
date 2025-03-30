@@ -458,7 +458,7 @@ function App() {
                     >
                       <div className="pt-4 border-t border-gray-200">
                         <h4 className="font-bold mb-2">Responsibilities:</h4>
-                        <ul className="space-y-2">
+                        <ul className="space-y-2 text-justify">
                           {internship.responsibilities.map(
                             (responsibility, idx) => (
                               <li key={idx} className="flex items-start gap-2">

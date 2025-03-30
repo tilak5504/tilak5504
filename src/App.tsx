@@ -215,9 +215,14 @@ function App() {
       details: "The Staid App · Freelance",
       timeline: "January 2024 - May 2024 · 5 months",
       location: "Remote",
-      description:
-        "Managed and grew social media presence for Staid.india, achieving 200 followers to 3000 followers on Instagram within 3 months. Monitored and analyzed performance using Meta Business Suite, achieving a 250% improvement in campaign effectiveness. Developed a content strategy with over 100 targeted keywords and 120+ posts, resulting in a 30% increase in engagement rates. Onboarded 7 UGC creators, increasing brand mentions by 40%. Executed 4 giveaway campaigns, averaging 40% participation increase. Engaged with followers, responding to over 500 comments.",
-    },
+      responsibilities: [
+        "Managed and grew social media presence for Staid.india, achieving 200 followers to 3000 followers on Instagram within 3 months.",
+        "Monitored and analyzed performance using Meta Business Suite, achieving a 250% improvement in campaign effectiveness.",
+        "Developed a content strategy with over 100 targeted keywords and 120+ posts, resulting in a 30% increase in engagement rates.",
+        "Onboarded 7 UGC creators, increasing brand mentions by 40%.",
+        "Executed 4 giveaway campaigns, averaging a 40% participation increase.",
+        "Engaged with followers, responding to over 500 comments."
+      ],    },
     {
       name: "Podcast Initiator",
       details: "Life After AGBS · Self-employed",

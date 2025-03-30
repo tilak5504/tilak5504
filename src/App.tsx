@@ -363,12 +363,6 @@ function App() {
                     period: "October 2020 - May 2022",
                     grade: "Grade: 9.4",
                   },
-                  {
-                    school: "Sri Chaitanya School",
-                    degree: "SSC",
-                    period: "July 2019 - September 2020",
-                    grade: "Grade: 10",
-                  },
                 ].map((education, index) => (
                   <div
                     key={index}

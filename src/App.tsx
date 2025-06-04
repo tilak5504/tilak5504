@@ -230,6 +230,22 @@ function App() {
 
   const internships: Internship[] = [
     {
+      company: "Swiggy",
+      position: "Culture & Communications Intern",
+      subtitle: "Swiggy · Internship",
+      duration: "Apr 2025 - May 2025 · 2 mos",
+      location: "Bangalore, Karnataka, India · Hybrid",
+      responsibilities: [
+        "Ideated, scripted, and packaged 2+ internal videos to drive employee engagement and cultural storytelling.",
+        "Wrote growth stories of Swiggsters for the Swiggy Verse platform, showcasing employee journeys.",
+        "Built custom GPTs to streamline internal communications and simplify org-wide information flows.",
+        "Shared 25+ GenAI tips on Slack, promoting practical Gemini use cases across cross-functional teams.",
+        "Coordinated with stakeholders to collect story inputs in both text and video formats.",
+      ],
+      logoUrl:
+        "https://cdn.brandfetch.io/idQZk-y8Sy/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B",
+    },
+    {
       company: "Acuvate",
       position: "Marketing Intern",
       subtitle: "Acuvate · Internship",

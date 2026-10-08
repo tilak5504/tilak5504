@@ -38,12 +38,21 @@ interface Internship {
   responsibilities: string[];
   logoUrl: string;
 }
+interface WorkExperience {
+  title: string;
+  icon: React.ReactNode;
+  items: WorkItem[];
+}
 
 function App() {
   const [expandedInternship, setExpandedInternship] = useState<number | null>(
-    null
-  );
-  const [hoveredSkill, setHoveredSkill] = useState<number | null>(null);
+  null
+);
+
+const [expandedWorkExperience, setExpandedWorkExperience] =
+  useState<number | null>(null);
+
+const [hoveredSkill, setHoveredSkill] = useState<number | null>(null);
   const [expandedProject, setExpandedProject] = useState<number | null>(null);
   const [expandedProof, setExpandedProof] = useState<number | null>(null);
 
@@ -227,7 +236,21 @@ function App() {
         "Successfully launched and maintained a podcast series within the college community. Published three podcast episodes online featuring AGBS Alumni. Organized one offline event to strengthen community engagement. Grew social media presence to 250 followers within a month. Received positive feedback from listeners, indicating a positive impact.",
     },
   ];
-
+const workExperience: Internship[] = [
+  {
+    company: "StudioExalt",
+    position: "Social Media Manager",
+    subtitle: "StudioExalt · Work Experience",
+    duration: "Mar 2026 - Jun 2026 · 4 mos",
+    location: "Hybrid",
+    responsibilities: [
+      "Managed 7+ client accounts across food, café, skincare, corporate and interior design brands.",
+      "Increased average organic reach by 110% through strategic content planning and short-form video optimization.",
+      "Designed 40+ marketing creatives leveraging AI tools to improve efficiency and output.",
+    ],
+    logoUrl: "/logo.svg",
+  },
+];
   const internships: Internship[] = [
     {
       company: "Swiggy",
@@ -367,10 +390,16 @@ function App() {
               <div className="space-y-12">
                 {[
                   {
+                    school: "SVKM's NMIMS Univerisity, Hyderabad",
+                    degree: "Master of Business Administration - MBA",
+                    period: "2026 - 2028",
+                    grade: "Grade: -",
+                  },
+                  {
                     school: "Aditya Global Business School",
                     degree: "Bachelor of Business Administration - BBA",
                     period: "2022 - 2025",
-                    grade: "Grade: 8.8",
+                    grade: "Grade: 8.62",
                   },
                   {
                     school: "Sasi Junior College",

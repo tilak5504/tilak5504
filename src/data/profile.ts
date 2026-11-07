@@ -9,7 +9,8 @@ export type Job = {
   duration: string;
   location: string;
   responsibilities: string[];
-  logoUrl: string;
+  /** one image link, or several to try in order if one fails to load */
+  logoUrl: string | string[];
 };
 
 export type Project = {
@@ -112,7 +113,10 @@ export const internships: Job[] = [
       "Assisted in setting up or optimizing email marketing campaigns for nurturing leads from webinars and blogs.",
     ],
     logoUrl:
-      "https://acuvate.com/uk/wp-content/uploads/2022/01/cropped-acu-favicon.png",
+      [
+        "https://acuvate.com/wp-content/uploads/2022/01/cropped-acu-favicon.png",
+        "https://acuvate.com/wp-content/uploads/2024/05/Acuvate-Logo.png",
+      ],
   },
   {
     company: "Solvprob Innovations Pvt. Ltd",

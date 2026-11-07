@@ -210,6 +210,22 @@ function EducationTimeline() {
 
 /* ───────────────────────── jobs ───────────────────────── */
 
+function Logo({ job }: { job: Job }) {
+  const urls = Array.isArray(job.logoUrl) ? job.logoUrl : [job.logoUrl];
+  const [i, setI] = useState(0);
+  if (i >= urls.length)
+    return <span className="w-full h-full grid place-items-center text-2xl font-bold bg-green-400">{job.company[0]}</span>;
+  return (
+    <img
+      src={urls[i]}
+      alt={`${job.company} logo`}
+      referrerPolicy="no-referrer"
+      onError={() => setI(i + 1)}
+      className="w-full h-full object-contain p-2"
+    />
+  );
+}
+
 function JobCard({ job, open, onToggle }: { job: Job; open: boolean; onToggle: () => void }) {
   return (
     <motion.div variants={riseChild}>
@@ -230,7 +246,7 @@ function JobCard({ job, open, onToggle }: { job: Job; open: boolean; onToggle: (
         />
         <motion.div layout="position" className="relative flex items-start gap-4">
           <motion.div className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-xl border border-black/10 bg-white overflow-hidden">
-            <img src={job.logoUrl} alt={`${job.company} logo`} className="w-full h-full object-contain p-2" />
+            <Logo job={job} />
           </motion.div>
           <div className="flex-grow min-w-0">
             <h3 className="text-lg md:text-xl font-bold">{job.company}</h3>

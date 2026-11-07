@@ -321,9 +321,10 @@ function SkillChip({ skill }: { skill: string }) {
         hidden: { opacity: 0, y: 12 },
         show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
       }}
-      className="inline-flex rounded-full border border-black/15 px-4 py-2 text-sm font-medium bg-white cursor-default transition-all duration-300 hover:bg-green-400 hover:border-green-400 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(74,222,128,0.5)]"
+      className="group relative inline-flex overflow-hidden rounded-full border border-black/15 px-4 py-2 text-sm font-medium bg-white cursor-default transition-[border-color,box-shadow] duration-300 hover:border-green-400 hover:shadow-[0_0_15px_rgba(74,222,128,0.45)]"
     >
-      {skill}
+      <span className="absolute inset-0 bg-green-400 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+      <span className="relative">{skill}</span>
     </motion.span>
   );
 }

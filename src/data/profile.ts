@@ -42,13 +42,6 @@ export const education: Education[] = [
     period: "2022 - 2025",
     grade: "Grade: 8.62",
   },
-  {
-    school: "Sasi Junior College",
-    degree: "Intermediate",
-    specialization: "MPC",
-    period: "October 2020 - May 2022",
-    grade: "Grade: 9.4",
-  },
 ];
 
 export const workExperience: Job[] = [

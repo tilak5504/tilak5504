@@ -1,6 +1,32 @@
 import { motion } from "framer-motion";
 import { Mail, Linkedin, Download, Instagram } from "lucide-react";
 
+const ROLES = [
+  ["Content Creator", "Digital Marketer", "Social Media Manager", "Podcast Producer"],
+  ["Photographer", "SEO Analyst", "Community Manager", "Videographer", "UGC Manager"],
+  ["Reddit Marketer", "Performance Marketer", "Creative Strategist", "Storyteller"],
+  ["Visual Designer", "Digital Content Specialist", "Social Brand", "Client Lead"],
+];
+
+function RoleRow({ roles, reverse, speed, highlight }: { roles: string[]; reverse?: boolean; speed: number; highlight?: string }) {
+  const items = [...roles, ...roles, ...roles, ...roles];
+  return (
+    <div className="flex overflow-hidden select-none" aria-hidden>
+      <div
+        className="flex shrink-0 gap-10 pr-10 animate-marquee whitespace-nowrap"
+        style={{ animationDuration: `${speed}s`, animationDirection: reverse ? "reverse" : "normal" }}
+      >
+        {items.map((r, i) => (
+          <span key={i} className={`text-4xl md:text-6xl font-bold ${r === highlight ? "text-orange-500/70" : "text-transparent hero-outline"}`}>
+            {r}
+            <span className="text-green-400">.</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const up = (delay = 0) => ({
   initial: { y: 40, opacity: 0 },
   animate: { y: 0, opacity: 1 },
@@ -11,14 +37,18 @@ export default function Hero() {
   return (
     <div className="relative min-h-[100svh] flex flex-col items-center justify-center pt-28 pb-16">
       {/* portrait over the wall of roles */}
-      <div className="relative w-full flex items-center justify-center py-6">
+      <div className="relative w-full flex items-center justify-center py-6 overflow-hidden">
         <motion.div
-          className="absolute inset-0 bg-center bg-cover opacity-40"
-          style={{ backgroundImage: "url('/Hero4.png')" }}
+          className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col gap-2 md:gap-3"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.4 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 1.2 }}
-        />
+        >
+          <RoleRow roles={ROLES[0]} speed={110} highlight="Digital Marketer" />
+          <RoleRow roles={ROLES[1]} speed={130} reverse />
+          <RoleRow roles={ROLES[2]} speed={120} highlight="Reddit Marketer" />
+          <RoleRow roles={ROLES[3]} speed={140} reverse />
+        </motion.div>
         <motion.div {...up(0)} className="relative z-10">
           <motion.div
             className="w-52 h-52 md:w-60 md:h-60 rounded-full bg-green-400 overflow-hidden border-4 border-white shadow-[0_0_40px_rgba(74,222,128,0.45)]"

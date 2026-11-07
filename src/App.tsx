@@ -64,6 +64,21 @@ const [expandedWork, setExpandedWork] = useState<number | null>(null);
   }, []);
 
   const skills = [
+    "Reddit Marketing",
+    "Subreddit Strategy",
+    "Reddit Ads",
+    "AEO",
+    "Organic Brand Mentions",
+    "Community Building",
+    "Keyword Research",
+    "Meta Ads",
+    "Performance Marketing",
+    "Marketing Analytics",
+    "Market Research",
+    "Generative AI",
+    "Video Editing",
+    "Stakeholder Management",
+    "Strategic Thinking",
     "Canva",
     "MS Office",
     "Google Suite",
@@ -91,6 +106,14 @@ const [expandedWork, setExpandedWork] = useState<number | null>(null);
 
   const projects: Project[] = [
     {
+      name: "New Product Development",
+      details: "GoMechanic · Live Project",
+      timeline: "September 2026 - Present",
+      location: "Strategy & Virality",
+      description:
+        "Benchmarking 15 auto-accessory categories worth ₹1,687 Cr+ in stated TAM, analysing competitive pricing, product breadth, packaging trends and promotional strategies. Building a virality playbook for Amazon and Flipkart, with share-worthy product, packaging and unboxing concepts for car fresheners, dashboard décor and showpieces.",
+    },
+    {
       name: "Videographer",
       details: "The Staid App · Freelance",
       timeline: "August 2024 - September 2024 · 2 months",
@@ -116,6 +139,21 @@ const [expandedWork, setExpandedWork] = useState<number | null>(null);
     },
   ];
 const workExperience: Internship[] = [
+  {
+    company: "Comment Seed",
+    position: "Founding Team · Client Lead",
+    subtitle: "Comment Seed · Part-time",
+    duration: "Part-time · Present",
+    location: "Reddit marketing for AI & SaaS",
+    responsibilities: [
+      "Part of the founding team at Comment Seed, a Reddit marketing engine for AI and SaaS brands.",
+      "Client lead for one of our major clients, owning their Reddit strategy and delivery end-to-end.",
+      "Build presence in relevant subreddits and spark organic discussions that keep the brand mentioned consistently.",
+      "Set up official brand accounts for an established identity, and run Reddit Ads for a steady paid presence.",
+      "Target keywords and AEO prompts so clients show up in search and AI answers, and grow brand subreddits into communities.",
+    ],
+    logoUrl: "/commentseed.svg",
+  },
   {
     company: "StudioExalt",
     position: "Social Media Manager",
@@ -290,7 +328,7 @@ const workExperience: Internship[] = [
                     school: "SVKM's NMIMS University, Hyderabad",
                     degree: "Master of Business Administration - MBA",
                     period: "2026 - 2028",
-                    grade: "Grade: -",
+                    grade: "CGPA: 8.13/10",
                   },
                   {
                     school: "Aditya Global Business School",

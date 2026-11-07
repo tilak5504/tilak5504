@@ -14,7 +14,7 @@ import {
   Mic,
   Camera,
 } from "lucide-react";
-import { posters, reels, videos, type Reel } from "../data/work";
+import { posters, reels, videos } from "../data/work";
 
 const TABS = [
   { id: "all", label: "All", icon: null },
@@ -74,102 +74,129 @@ function SectionTitle({
 
 /* ───────────────────────── reels ───────────────────────── */
 
-function ReelTile({ reel, onOpen }: { reel: Reel; onOpen: () => void }) {
+function ReelStage() {
+  const [idx, setIdx] = useState(0);
+  const [muted, setMuted] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [loading, setLoading] = useState(true);
   const vid = useRef<HTMLVideoElement>(null);
-  const [ref, near] = useInView<HTMLButtonElement>(0.01);
-  const play = () => vid.current?.play().catch(() => {});
-  const stop = () => {
-    if (!vid.current) return;
-    vid.current.pause();
-    vid.current.currentTime = 0;
-  };
+  const [wrap, inView] = useInView<HTMLDivElement>(0.25);
+  const reel = reels[idx];
   const portrait = reel.shape === "portrait";
-  return (
-    <button
-      ref={ref}
-      onMouseEnter={play}
-      onMouseLeave={stop}
-      onFocus={play}
-      onBlur={stop}
-      onClick={onOpen}
-      className={`group relative flex-shrink-0 snap-start rounded-2xl overflow-hidden bg-neutral-900 border border-white/10 ${
-        portrait ? "w-[200px] h-[356px] md:w-[230px] md:h-[409px]" : "w-[300px] h-[356px] md:w-[460px] md:h-[409px]"
-      }`}
-      aria-label={`Play ${reel.title}`}
-    >
-      <img src={`/work/reels/${reel.id}.jpg`} alt="" className={`absolute inset-0 w-full h-full ${portrait ? "object-cover" : "object-contain"}`} />
-      {near && (
-        <video
-          ref={vid}
-          src={`/work/reels/${reel.id}.mp4`}
-          muted
-          loop
-          playsInline
-          preload="metadata"
-          className={`absolute inset-0 w-full h-full ${portrait ? "object-cover" : "object-contain"} opacity-0 group-hover:opacity-100 group-focus:opacity-100 transition-opacity duration-300`}
-        />
-      )}
-      <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent text-left">
-        <p className="text-[11px] uppercase tracking-widest text-green-400">{reel.type}</p>
-        <p className="text-white font-semibold leading-tight mt-1">{reel.title}</p>
-        <p className="text-white/60 text-xs mt-0.5">{reel.client}</p>
-      </div>
-      <span className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/50 backdrop-blur grid place-items-center group-hover:scale-110 transition-transform">
-        <Play className="w-4 h-4 text-white fill-white ml-0.5" />
-      </span>
-    </button>
-  );
-}
 
-function ReelPlayer({ reel, onClose, onNext, onPrev }: { reel: Reel; onClose: () => void; onNext: () => void; onPrev: () => void }) {
-  useLockScroll(true);
-  const [muted, setMuted] = useState(false);
   useEffect(() => {
-    const k = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight") onNext();
-      if (e.key === "ArrowLeft") onPrev();
-    };
-    window.addEventListener("keydown", k);
-    return () => window.removeEventListener("keydown", k);
-  }, [onClose, onNext, onPrev]);
-  const portrait = reel.shape === "portrait";
+    const v = vid.current;
+    if (!v || !inView) return;
+    setProgress(0);
+    setLoading(true);
+    v.load();
+    v.play().catch(() => {});
+  }, [idx, inView]);
+
+  const pick = (i: number) => setIdx((i + reels.length) % reels.length);
+
   return (
-    <motion.div
-      className="fixed inset-0 z-[90] bg-black/95 flex items-center justify-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onClick={onClose}
-    >
-      <button onClick={onClose} aria-label="Close" className="absolute top-5 right-5 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white">
-        <X className="w-6 h-6" />
-      </button>
-      <button onClick={(e) => { e.stopPropagation(); onPrev(); }} aria-label="Previous" className="absolute left-2 md:left-8 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white">
-        <ChevronLeft className="w-6 h-6" />
-      </button>
-      <button onClick={(e) => { e.stopPropagation(); onNext(); }} aria-label="Next" className="absolute right-2 md:right-8 z-10 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white">
-        <ChevronRight className="w-6 h-6" />
-      </button>
-      <motion.div
-        key={reel.id}
-        initial={{ scale: 0.92, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className={`relative ${portrait ? "h-[86vh] aspect-[9/16] max-w-[92vw]" : "w-[92vw] max-w-5xl aspect-video"}`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <video src={`/work/reels/${reel.id}.mp4`} autoPlay loop playsInline muted={muted} controls className="w-full h-full rounded-2xl bg-black object-contain" />
-        <div className="absolute -bottom-12 left-0 right-0 flex items-center justify-between text-white">
-          <div>
-            <span className="font-semibold">{reel.title}</span>
-            <span className="text-white/50 text-sm"> · {reel.client}</span>
+    <div ref={wrap} className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[auto_minmax(0,1fr)] gap-8 lg:gap-14 items-center">
+      {/* screen */}
+      <div className="flex flex-col items-center">
+        <motion.div
+          layout
+          transition={{ type: "spring", damping: 26, stiffness: 220 }}
+          className={`relative bg-neutral-900 border-[6px] border-neutral-800 shadow-[0_30px_80px_rgba(74,222,128,0.12)] overflow-hidden ${
+            portrait ? "w-[260px] md:w-[300px] aspect-[9/16] rounded-[2.2rem]" : "w-[min(92vw,520px)] aspect-video rounded-[1.4rem]"
+          }`}
+        >
+          <img src={`/work/reels/${reel.id}.webp`} alt="" className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-60" />
+          {inView && (
+            <video
+              ref={vid}
+              src={`/work/reels/${reel.id}.mp4`}
+              poster={`/work/reels/${reel.id}.webp`}
+              muted={muted}
+              playsInline
+              preload="auto"
+              onCanPlay={() => setLoading(false)}
+              onWaiting={() => setLoading(true)}
+              onPlaying={() => setLoading(false)}
+              onTimeUpdate={(e) => {
+                const v = e.currentTarget;
+                if (v.duration) setProgress(v.currentTime / v.duration);
+              }}
+              onEnded={() => pick(idx + 1)}
+              onClick={(e) => (e.currentTarget.paused ? e.currentTarget.play() : e.currentTarget.pause())}
+              className="relative w-full h-full object-contain cursor-pointer"
+            />
+          )}
+          {loading && (
+            <span className="absolute inset-0 grid place-items-center pointer-events-none">
+              <span className="w-10 h-10 rounded-full border-2 border-white/20 border-t-green-400 animate-spin" />
+            </span>
+          )}
+          <div className="absolute top-3 inset-x-3 h-1 rounded-full bg-white/20 overflow-hidden">
+            <div className="h-full bg-white" style={{ width: `${progress * 100}%` }} />
           </div>
-          <button onClick={() => setMuted((m) => !m)} className="p-2 rounded-full bg-white/10" aria-label={muted ? "Unmute" : "Mute"}>
-            {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          <button
+            onClick={() => setMuted((m) => !m)}
+            className="absolute bottom-3 right-3 w-10 h-10 rounded-full bg-black/60 backdrop-blur grid place-items-center text-white hover:bg-black/80"
+            aria-label={muted ? "Turn sound on" : "Turn sound off"}
+          >
+            {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
+          </button>
+        </motion.div>
+        <div className="flex items-center gap-4 mt-5 text-white">
+          <button onClick={() => pick(idx - 1)} aria-label="Previous reel" className="p-2 rounded-full bg-white/10 hover:bg-white/20">
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <span className="text-sm text-white/60 tabular-nums w-14 text-center">
+            {idx + 1} / {reels.length}
+          </span>
+          <button onClick={() => pick(idx + 1)} aria-label="Next reel" className="p-2 rounded-full bg-white/10 hover:bg-white/20">
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+
+      {/* playlist */}
+      <div>
+        <AnimatePresence mode="wait">
+          <motion.div key={reel.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mb-6 hidden lg:block">
+            <p className="text-green-400 text-xs uppercase tracking-[0.25em]">Now playing · {reel.type}</p>
+            <h4 className="text-white text-3xl font-bold mt-2">{reel.title}</h4>
+            <p className="text-white/50 mt-1">{reel.client}</p>
+          </motion.div>
+        </AnimatePresence>
+        <div className="flex lg:grid lg:grid-cols-2 gap-3 overflow-x-auto lg:overflow-visible no-scrollbar -mx-4 px-4 lg:mx-0 lg:px-0 snap-x">
+          {reels.map((r, i) => (
+            <button
+              key={r.id}
+              onClick={() => pick(i)}
+              className={`flex-shrink-0 w-[230px] lg:w-auto snap-start flex items-center gap-3 p-2 pr-4 rounded-xl text-left border transition-colors ${
+                i === idx ? "bg-white/10 border-green-400/60" : "border-white/10 hover:bg-white/5 hover:border-white/25"
+              }`}
+            >
+              <span className="relative w-12 h-16 flex-shrink-0 rounded-lg overflow-hidden bg-neutral-800">
+                <img src={`/work/reels/${r.id}.webp`} alt="" loading="lazy" className="w-full h-full object-cover" />
+                {i === idx && (
+                  <span className="absolute inset-0 grid place-items-center bg-black/40">
+                    <span className="flex gap-0.5 items-end h-4">
+                      {[0, 1, 2].map((b) => (
+                        <span key={b} className="w-1 bg-green-400 animate-eq" style={{ animationDelay: `${b * 0.15}s` }} />
+                      ))}
+                    </span>
+                  </span>
+                )}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-white text-sm font-semibold truncate">{r.title}</span>
+                <span className="block text-white/50 text-xs truncate">
+                  {r.client} · {r.type}
+                </span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -217,7 +244,7 @@ function PosterLightbox({ list, index, onClose, setIndex }: { list: typeof poste
       <motion.img
         key={p.id}
         src={`/work/posters/${p.id}.webp`}
-        alt={`${p.client} — ${p.format}`}
+        alt={`${p.client} design`}
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         className="max-h-[80vh] max-w-full rounded-lg shadow-2xl"
@@ -225,7 +252,7 @@ function PosterLightbox({ list, index, onClose, setIndex }: { list: typeof poste
       />
       <p className="text-white mt-4 text-center">
         <span className="font-semibold">{p.client}</span>
-        <span className="text-white/50"> · {p.format} · {p.industry}</span>
+        <span className="text-white/50"> · {p.industry}</span>
         <span className="text-white/30 ml-3 tabular-nums">{index + 1}/{list.length}</span>
       </p>
     </motion.div>
@@ -234,18 +261,16 @@ function PosterLightbox({ list, index, onClose, setIndex }: { list: typeof poste
 
 function DesignGallery() {
   const industries = useMemo(() => ["All", ...Array.from(new Set(posters.map((p) => p.industry)))], []);
-  const formats = useMemo(() => ["Any format", ...Array.from(new Set(posters.map((p) => p.format)))], []);
   const [industry, setIndustry] = useState("All");
-  const [format, setFormat] = useState("Any format");
   const [open, setOpen] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false);
   const list = posters.filter(
-    (p) => (industry === "All" || p.industry === industry) && (format === "Any format" || p.format === format)
+    (p) => industry === "All" || p.industry === industry
   );
   const visible = showAll ? list : list.slice(0, 12);
   return (
     <div>
-      <div className="flex flex-wrap gap-2 mb-3">
+      <div className="flex flex-wrap gap-2 mb-6">
         {industries.map((i) => (
           <button
             key={i}
@@ -258,46 +283,27 @@ function DesignGallery() {
           </button>
         ))}
       </div>
-      <div className="flex flex-wrap gap-2 mb-6">
-        {formats.map((f) => (
-          <button
-            key={f}
-            onClick={() => { setFormat(f); setShowAll(false); }}
-            className={`px-2.5 py-1 rounded-md text-xs transition-colors ${
-              format === f ? "bg-orange-500 text-white" : "text-white/50 hover:text-white"
-            }`}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
-      <motion.div layout className="columns-2 md:columns-3 lg:columns-4 gap-4 [column-fill:_balance]">
-        <AnimatePresence>
+      <div className="columns-2 md:columns-3 lg:columns-4 gap-4">
           {visible.map((p) => (
-            <motion.button
-              layout
+            <button
               key={p.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
               onClick={() => setOpen(list.indexOf(p))}
               className="group relative block w-full mb-4 break-inside-avoid rounded-xl overflow-hidden bg-neutral-900"
               style={{ aspectRatio: `${p.w} / ${p.h}` }}
             >
               <img
                 src={`/work/posters/${p.id}-sm.webp`}
-                alt={`${p.client} — ${p.format}`}
+                alt={`${p.client} design`}
                 loading="lazy"
                 className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3 text-left">
                 <span className="text-white text-sm font-semibold">{p.client}</span>
-                <span className="text-white/60 text-xs">{p.format}</span>
+                <span className="text-white/60 text-xs">{p.industry}</span>
               </div>
-            </motion.button>
+            </button>
           ))}
-        </AnimatePresence>
-      </motion.div>
+      </div>
       {list.length > 12 && (
         <div className="text-center mt-4">
           <button onClick={() => setShowAll((s) => !s)} className="px-5 py-2.5 rounded-full border border-white/20 text-white hover:bg-white hover:text-black transition-colors">
@@ -346,7 +352,6 @@ function YouTubeLite({ id, title }: { id: string; title: string }) {
 
 export default function ProofOfWork() {
   const [tab, setTab] = useState<TabId>("all");
-  const [reelIdx, setReelIdx] = useState<number | null>(null);
   const show = (t: TabId) => tab === "all" || tab === t;
 
   return (
@@ -385,18 +390,14 @@ export default function ProofOfWork() {
         <div className="space-y-20">
           {show("reels") && (
             <div>
-              <SectionTitle icon={Film} title="Reels" note="Hover to preview · click for sound" />
-              <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 -mx-4 px-4 reel-scroll">
-                {reels.map((r, i) => (
-                  <ReelTile key={r.id} reel={r} onOpen={() => setReelIdx(i)} />
-                ))}
-              </div>
+              <SectionTitle icon={Film} title="Reels" note="Tap the screen to pause · pick any reel from the list" />
+              <ReelStage />
             </div>
           )}
 
           {show("design") && (
             <div>
-              <SectionTitle icon={Palette} title="Design" note={`${posters.length} posters, stories & banners`} />
+              <SectionTitle icon={Palette} title="Design" note={`${posters.length} designs`} />
               <DesignGallery />
             </div>
           )}
@@ -445,17 +446,6 @@ export default function ProofOfWork() {
         </div>
       </div>
 
-      {createPortal(<AnimatePresence>
-        {reelIdx !== null && (
-          <ReelPlayer
-            key="reel"
-            reel={reels[reelIdx]}
-            onClose={() => setReelIdx(null)}
-            onNext={() => setReelIdx((reelIdx + 1) % reels.length)}
-            onPrev={() => setReelIdx((reelIdx - 1 + reels.length) % reels.length)}
-          />
-        )}
-      </AnimatePresence>, document.body)}
     </section>
   );
 }

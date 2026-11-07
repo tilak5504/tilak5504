@@ -64,7 +64,7 @@ export const workExperience: Job[] = [
       "Set up official brand accounts for an established identity, and run Reddit Ads for a steady paid presence.",
       "Target keywords and AEO prompts so clients show up in search and AI answers, and grow brand subreddits into communities.",
     ],
-    logoUrl: "/commentseed.svg",
+    logoUrl: "/commentseed.png",
   },
   {
     company: "StudioExalt",
@@ -184,22 +184,18 @@ export const projects: Project[] = [
 export const skillGroups: { title: string; skills: string[] }[] = [
   {
     title: "Reddit & Community",
-    skills: ["Reddit Marketing", "Subreddit Strategy", "Reddit Ads", "AEO", "Organic Brand Mentions", "Community Building"],
+    skills: ["Reddit Marketing", "Subreddit Strategy", "Reddit Ads", "AEO", "Community Building"],
   },
   {
     title: "Growth & Performance",
-    skills: ["SEO", "Keyword Research", "Meta Ads", "Performance Marketing", "Marketing Analytics", "Market Research", "Hubspot Marketing Hub", "Email Marketing", "Social Media Marketing", "Cold Mailing", "Telecalling"],
+    skills: ["SEO", "Keyword Research", "Meta Ads", "Performance Marketing", "Marketing Analytics", "Market Research", "Email Marketing"],
   },
   {
     title: "Content & Creative",
-    skills: ["Content Creation", "Copywriting", "Video Editing", "Podcast Production", "Generative AI", "Canva"],
+    skills: ["Social Media Strategy", "Content Creation", "Copywriting", "Video Editing", "Podcast Production", "Generative AI"],
   },
   {
     title: "Tools",
-    skills: ["MS Office", "Google Suite", "HTML"],
-  },
-  {
-    title: "How I work",
-    skills: ["Strategic Thinking", "Stakeholder Management", "Communication", "Entrepreneurship", "Time Management", "Adaptability", "Problem Solving", "Teamwork", "Creativity", "Aptitude", "Multi-tasking", "Eye-to-detail"],
+    skills: ["Canva", "HubSpot", "Meta Business Suite", "MS Excel", "Google Workspace"],
   },
 ];

@@ -381,7 +381,6 @@ function Skills() {
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
             variants={staggerParent(0.04)}
-            className={gi === 0 ? "md:col-span-2" : ""}
           >
             <motion.h3
               className="flex items-center gap-3 text-sm font-mono tracking-[0.25em] uppercase text-black/50 mb-5"

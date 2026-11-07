@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
   motion,
+  useMotionValue,
   useReducedMotion,
   useScroll,
   useSpring,
@@ -122,13 +123,35 @@ function Countdown({ onDone }: { onDone: () => void }) {
   );
 }
 
-/* ───────────── one frame on the strip ───────────── */
-function Frame({ p, index, roll, onOpen }: { p: Photo; index: number; roll: Roll; onOpen: () => void }) {
+/* ───────────── one frame on the strip ─────────────
+   Each frame starts as an orange film negative and "develops"
+   into the real photo when it reaches the middle of the screen. */
+const NEGATIVE = "invert(1) hue-rotate(180deg) sepia(0.45) saturate(1.4) brightness(0.85) contrast(0.9)";
+
+function Frame({ p, index, roll, onOpen, onHover }: { p: Photo; index: number; roll: Roll; onOpen: () => void; onHover: (p: Photo | null) => void }) {
   const frameNo = `${index + 1}`.padStart(2, "0");
+  const reduce = useReducedMotion();
+  const ref = useRef<HTMLButtonElement>(null);
+  const [developed, setDeveloped] = useState(!!reduce);
+  useEffect(() => {
+    if (developed || !ref.current) return;
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setDeveloped(true), {
+      rootMargin: "0px -40% 0px -40%",
+      threshold: 0,
+    });
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [developed]);
   return (
     <div className="relative h-full flex-shrink-0 flex flex-col" style={{ aspectRatio: `${p.w} / ${p.h}` }}>
       <button
-        onClick={onOpen}
+        ref={ref}
+        onClick={() => {
+          setDeveloped(true);
+          onOpen();
+        }}
+        onPointerEnter={() => onHover(p)}
+        onPointerLeave={() => onHover(null)}
         className="group relative flex-1 min-h-0 overflow-hidden bg-black outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
         aria-label={`Open ${p.title}`}
       >
@@ -137,7 +160,13 @@ function Frame({ p, index, roll, onOpen }: { p: Photo; index: number; roll: Roll
           alt={p.title}
           loading="lazy"
           draggable={false}
-          className="w-full h-full object-cover transition-all duration-700 saturate-[0.85] brightness-[0.92] group-hover:saturate-100 group-hover:brightness-105 group-hover:scale-[1.03]"
+          className="w-full h-full object-cover transition-[filter,transform] duration-[1800ms] ease-out group-hover:scale-[1.03]"
+          style={{ filter: developed ? "none" : NEGATIVE }}
+        />
+        {/* orange film-base tint that fades as the frame develops */}
+        <span
+          className="absolute inset-0 bg-[#c8742c] mix-blend-multiply transition-opacity duration-[1800ms] pointer-events-none"
+          style={{ opacity: developed ? 0 : 0.55 }}
         />
         <span className="absolute inset-x-0 bottom-0 p-3 text-left font-mono text-[11px] text-[#efe7d2] bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
           {p.title}
@@ -150,8 +179,59 @@ function Frame({ p, index, roll, onOpen }: { p: Photo; index: number; roll: Roll
   );
 }
 
+/* ───────────── viewfinder cursor (mouse only) ───────────── */
+function Viewfinder({ target, hidden }: { target: Photo | null; hidden: boolean }) {
+  const x = useMotionValue(-200);
+  const y = useMotionValue(-200);
+  const sx = useSpring(x, { stiffness: 500, damping: 40, mass: 0.4 });
+  const sy = useSpring(y, { stiffness: 500, damping: 40, mass: 0.4 });
+  useEffect(() => {
+    const m = (e: PointerEvent) => {
+      if (e.pointerType !== "mouse") return;
+      x.set(e.clientX);
+      y.set(e.clientY);
+    };
+    window.addEventListener("pointermove", m);
+    return () => window.removeEventListener("pointermove", m);
+  }, [x, y]);
+  const locked = !!target;
+  const corner = "absolute w-4 h-4 border-current";
+  return (
+    <motion.div
+      className="fixed top-0 left-0 z-[120] pointer-events-none"
+      style={{ x: sx, y: sy }}
+      animate={{ opacity: hidden ? 0 : 1 }}
+      aria-hidden
+    >
+      <motion.div
+        className={`absolute -translate-x-1/2 -translate-y-1/2 ${locked ? "text-orange-500" : "text-[#efe7d2]/80"}`}
+        animate={{ width: locked ? 54 : 76, height: locked ? 54 : 76 }}
+        transition={{ type: "spring", stiffness: 400, damping: 22 }}
+      >
+        <span className={`${corner} top-0 left-0 border-t-2 border-l-2`} />
+        <span className={`${corner} top-0 right-0 border-t-2 border-r-2`} />
+        <span className={`${corner} bottom-0 left-0 border-b-2 border-l-2`} />
+        <span className={`${corner} bottom-0 right-0 border-b-2 border-r-2`} />
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-current" />
+      </motion.div>
+      <motion.div
+        className="absolute left-12 top-6 whitespace-nowrap font-mono text-[10px] tracking-wider text-[#efe7d2] bg-black/60 backdrop-blur px-2 py-1 rounded"
+        initial={false}
+        animate={{ opacity: locked ? 1 : 0, x: locked ? 0 : -6 }}
+        transition={{ duration: 0.2 }}
+      >
+        {target && (
+          <>
+            <span className="text-orange-500">● FOCUS</span> &nbsp;{target.camera.split(" · ").slice(1).join("  ") || target.camera}
+          </>
+        )}
+      </motion.div>
+    </motion.div>
+  );
+}
+
 /* ───────────── a roll of film that scrolls sideways ───────────── */
-function FilmRoll({ roll, rollIndex, onOpen }: { roll: Roll; rollIndex: number; onOpen: (r: number, i: number) => void }) {
+function FilmRoll({ roll, rollIndex, onOpen, onHover }: { roll: Roll; rollIndex: number; onOpen: (r: number, i: number) => void; onHover: (p: Photo | null) => void }) {
   const reduce = useReducedMotion();
   const section = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
@@ -191,7 +271,7 @@ function FilmRoll({ roll, rollIndex, onOpen }: { roll: Roll; rollIndex: number; 
           <span>◀ ROLL {roll.num}</span>
         </div>
         {roll.photos.map((p, i) => (
-          <Frame key={p.id} p={p} index={i} roll={roll} onOpen={() => onOpen(rollIndex, i)} />
+          <Frame key={p.id} p={p} index={i} roll={roll} onOpen={() => onOpen(rollIndex, i)} onHover={onHover} />
         ))}
         <div className="h-full flex items-center pl-6 font-mono text-[#efe7d2]/30 text-xs tracking-widest">END ▶</div>
       </div>
@@ -325,6 +405,21 @@ export default function Photography() {
   const [intro, setIntro] = useState(!reduce);
   const [open, setOpen] = useState<{ r: number; i: number } | null>(null);
   const [sound, setSound] = useState(false);
+  const [hovered, setHovered] = useState<Photo | null>(null);
+  const [flash, setFlash] = useState(0);
+  const [finePointer, setFinePointer] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(pointer: fine)");
+    setFinePointer(mq.matches);
+    const h = (e: MediaQueryListEvent) => setFinePointer(e.matches);
+    mq.addEventListener("change", h);
+    return () => mq.removeEventListener("change", h);
+  }, []);
+  const openPhoto = (r: number, i: number) => {
+    setFlash((f) => f + 1);
+    setHovered(null);
+    setTimeout(() => setOpen({ r, i }), 140);
+  };
 
   useEffect(() => {
     document.title = "The Darkroom — Tilak";
@@ -345,7 +440,7 @@ export default function Photography() {
     });
 
   return (
-    <div className="darkroom min-h-screen bg-[#0b0a09] text-[#efe7d2] overflow-x-clip">
+    <div className={`darkroom min-h-screen bg-[#0b0a09] text-[#efe7d2] overflow-x-clip ${finePointer && !reduce && !open ? "cursor-none [&_*]:cursor-none" : ""}`}>
       <AnimatePresence>{intro && <Countdown onDone={() => setIntro(false)} />}</AnimatePresence>
 
       {/* grain + light leaks */}
@@ -412,7 +507,7 @@ export default function Photography() {
       </section>
 
       {rolls.map((roll, ri) => (
-        <FilmRoll key={roll.num} roll={roll} rollIndex={ri} onOpen={(r, i) => setOpen({ r, i })} />
+        <FilmRoll key={roll.num} roll={roll} rollIndex={ri} onOpen={openPhoto} onHover={setHovered} />
       ))}
 
       {/* end */}
@@ -432,6 +527,22 @@ export default function Photography() {
       <AnimatePresence>
         {open && <Darkroom r={open.r} i={open.i} onClose={() => setOpen(null)} go={go} sound={sound} />}
       </AnimatePresence>
+
+      {/* camera flash */}
+      <AnimatePresence>
+        {flash > 0 && (
+          <motion.div
+            key={flash}
+            className="fixed inset-0 z-[110] bg-white pointer-events-none"
+            initial={{ opacity: 0.95 }}
+            animate={{ opacity: 0 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            onAnimationComplete={() => setFlash(0)}
+          />
+        )}
+      </AnimatePresence>
+
+      {finePointer && !reduce && <Viewfinder target={hovered} hidden={!!open || intro} />}
     </div>
   );
 }

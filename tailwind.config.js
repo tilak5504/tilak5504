@@ -11,6 +11,10 @@ export default {
           '60%': { transform: 'translate(-2%,-1%)' },
           '80%': { transform: 'translate(3%,3%)' },
         },
+        wave: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
+        },
         marquee: {
           from: { transform: 'translateX(0)' },
           to: { transform: 'translateX(-50%)' },
@@ -29,6 +33,7 @@ export default {
         leak: 'leak 12s ease-in-out infinite',
         eq: 'eq 0.8s ease-in-out infinite',
         marquee: 'marquee 60s linear infinite',
+        wave: 'wave 1.6s linear infinite',
         'spin-slow': 'spin 22s linear infinite',
       },
       fontFamily: {

@@ -315,15 +315,28 @@ function JobList({ jobs }: { jobs: Job[] }) {
 /* ───────────────────────── skills ───────────────────────── */
 
 function SkillChip({ skill }: { skill: string }) {
+  const [filled, setFilled] = useState(false);
   return (
     <motion.span
       variants={{
-        hidden: { opacity: 0, y: 12 },
-        show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+        hidden: { opacity: 0, y: 24, scale: 0.6, rotate: -10 },
+        show: { opacity: 1, y: 0, scale: 1, rotate: 0, transition: { type: "spring", stiffness: 320, damping: 16 } },
       }}
-      className="group relative inline-flex overflow-hidden rounded-full border border-black/15 px-4 py-2 text-sm font-medium bg-white cursor-default transition-[border-color,box-shadow] duration-300 hover:border-green-400 hover:shadow-[0_0_15px_rgba(74,222,128,0.45)]"
+      whileHover={{ y: -3 }}
+      whileTap={{ scale: 0.92 }}
+      onTap={() => setFilled((f) => !f)}
+      className="group relative inline-flex overflow-hidden rounded-full border border-black/15 px-4 py-2 text-sm font-medium bg-white cursor-pointer select-none transition-[border-color,box-shadow] duration-300 hover:border-green-400 hover:shadow-[0_0_15px_rgba(74,222,128,0.45)]"
     >
-      <span className="absolute inset-0 bg-green-400 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+      {/* liquid: a green body with a moving wave on top, rising from the bottom */}
+      <span
+        aria-hidden
+        className={`absolute inset-x-0 bottom-0 h-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 ${filled ? "translate-y-0" : "translate-y-[115%]"}`}
+      >
+        <svg className="absolute -top-[7px] left-0 w-[200%] h-2 animate-wave" viewBox="0 0 120 8" preserveAspectRatio="none">
+          <path d="M0 4 Q7.5 0 15 4 T30 4 T45 4 T60 4 T75 4 T90 4 T105 4 T120 4 V8 H0Z" fill="#4ade80" />
+        </svg>
+        <span className="absolute inset-0 bg-green-400" />
+      </span>
       <span className="relative">{skill}</span>
     </motion.span>
   );
@@ -339,7 +352,7 @@ function Skills() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.3 }}
-            variants={staggerParent(0.04)}
+            variants={staggerParent(0.05)}
           >
             <motion.h3
               className="flex items-center gap-3 text-sm font-mono tracking-[0.25em] uppercase text-black/50 mb-5"

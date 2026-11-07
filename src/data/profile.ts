@@ -37,10 +37,10 @@ export const education: Education[] = [
     grade: "CGPA: 8.13/10",
   },
   {
-    school: "Aditya Global Business School",
+    school: "Aditya Degree & P.G. College",
     degree: "Bachelor of Business Administration - BBA",
     period: "2022 - 2025",
-    grade: "Grade: 8.62",
+    grade: "Score: 86.2%",
   },
 ];
 
@@ -49,8 +49,8 @@ export const workExperience: Job[] = [
     company: "Comment Seed",
     position: "Founding Team · Client Lead",
     subtitle: "Comment Seed · Part-time",
-    duration: "Part-time · Present",
-    location: "Reddit marketing for AI & SaaS",
+    duration: "Oct 2026 - Present · Part-time",
+    location: "Remote",
     responsibilities: [
       "Part of the founding team at Comment Seed, a Reddit marketing engine for AI and SaaS brands.",
       "Client lead for one of our major clients, owning their Reddit strategy and delivery end-to-end.",
@@ -83,7 +83,7 @@ export const internships: Job[] = [
     duration: "Apr 2025 - May 2025 · 2 mos",
     location: "Bangalore, Karnataka, India · Hybrid",
     responsibilities: [
-      "Ideated, scripted, and packaged 2+ internal videos to drive employee engagement and cultural storytelling.",
+      "Ideated, scripted, and packaged 4+ internal videos to drive employee engagement and cultural storytelling.",
       "Wrote growth stories of Swiggsters for the Swiggy Verse platform, showcasing employee journeys.",
       "Built custom GPTs to streamline internal communications and simplify org-wide information flows.",
       "Shared 25+ GenAI tips on Slack, promoting practical Gemini use cases across cross-functional teams.",
@@ -101,6 +101,7 @@ export const internships: Job[] = [
     responsibilities: [
       "Revamped all blog pages and landing pages, aligning them with SEO best practices, resulting in a 120% increase in active users.",
       "Led the end-to-end execution of webinar promotions using third-party platforms: handled platform selection, deal closures, event optimization, and lead tracking, securing 250+ registrations from targeted industries.",
+      "Received the Excellent Commitment Award (APL 2025) for contribution to event execution.",
       "Directed and participated in podcast production, client shoots, and website content creation, enhancing brand storytelling and visual identity.",
       "Managed company social media accounts and expanded community engagement across LinkedIn, Medium, Reddit, and Quora to strengthen thought leadership and brand visibility.",
       "Assisted in setting up or optimizing email marketing campaigns for nurturing leads from webinars and blogs.",
@@ -113,14 +114,14 @@ export const internships: Job[] = [
   },
   {
     company: "Solvprob Innovations Pvt. Ltd",
-    position: "Marketing Intern",
+    position: "Social Media Marketing Intern",
     subtitle: "Solvprob Innovations Pvt. Ltd · Internship",
     duration: "May 2024 - Jun 2024 · 2 mos",
     location: "Hyderabad, Telangana, India · On-site",
     responsibilities: [
-      "Curated content calendars, increased content output by 80%",
+      "Curated content calendars, increased content output by 30%",
       "Managed social media, increased engagement by 330%",
-      "Executed Meta ads for PI Cancer Care, Meera Charitable Trust, Dr. Bharat Patodiya, increased ad reach by 70%",
+      "Executed Meta ads for PI Cancer Care, Meera Charitable Trust, Dr. Bharat Patodiya, increased ad reach by 40%",
       "Maintained communication with 10+ clients",
     ],
     logoUrl:
@@ -147,9 +148,17 @@ export const projects: Project[] = [
     name: "New Product Development",
     details: "GoMechanic · Live Project",
     timeline: "September 2026 - Present",
-    location: "Strategy & Virality",
+    location: "Remote",
     description:
       "Benchmarking 15 auto-accessory categories worth ₹1,687 Cr+ in stated TAM, analysing competitive pricing, product breadth, packaging trends and promotional strategies. Building a virality playbook for Amazon and Flipkart, with share-worthy product, packaging and unboxing concepts for car fresheners, dashboard décor and showpieces.",
+  },
+  {
+    name: "Media Head",
+    details: "AADIT 2024 · College Fest",
+    timeline: "2024",
+    location: "Position of Responsibility",
+    description:
+      "Produced and edited 6-7 reels for a nationwide college fest, reaching 100k+ views and expanding the event's reach across social media. Drove a 400% increase in the fest account's engagement.",
   },
   {
     name: "Videographer",
@@ -162,7 +171,7 @@ export const projects: Project[] = [
   {
     name: "Social Media Manager",
     details: "The Staid App · Freelance",
-    timeline: "January 2024 - May 2024 · 5 months",
+    timeline: "February 2024 - May 2024 · 4 months",
     location: "Remote",
     description:
       "Managed and grew social media presence for Staid.india, achieving 200 followers to 3000 followers on Instagram within 3 months. Monitored and analyzed performance using Meta Business Suite, achieving a 250% improvement in campaign effectiveness. Developed a content strategy with over 100 targeted keywords and 120+ posts, resulting in a 30% increase in engagement rates. Onboarded 7 UGC creators, increasing brand mentions by 40%. Executed 4 giveaway campaigns, averaging 40% participation increase. Engaged with followers, responding to over 500 comments.",

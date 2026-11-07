@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { Mail, Linkedin, Download, Instagram } from "lucide-react";
 
 const ROLES = [
@@ -27,6 +28,80 @@ function RoleRow({ roles, reverse, speed, highlight }: { roles: string[]; revers
   );
 }
 
+function Portrait() {
+  const [on, setOn] = useState(false);
+  const px = useMotionValue(0);
+  const py = useMotionValue(0);
+  const rotateY = useSpring(useTransform(px, [-1, 1], [-12, 12]), { stiffness: 180, damping: 16 });
+  const rotateX = useSpring(useTransform(py, [-1, 1], [10, -10]), { stiffness: 180, damping: 16 });
+  return (
+    <motion.div
+      className="relative w-52 h-52 md:w-60 md:h-60 cursor-pointer"
+      style={{ rotateX, rotateY, transformPerspective: 800 }}
+      onPointerEnter={(e) => e.pointerType === "mouse" && setOn(true)}
+      onPointerLeave={(e) => {
+        if (e.pointerType === "mouse") setOn(false);
+        px.set(0);
+        py.set(0);
+      }}
+      onPointerMove={(e) => {
+        if (e.pointerType !== "mouse") return;
+        const r = e.currentTarget.getBoundingClientRect();
+        px.set(((e.clientX - r.left) / r.width) * 2 - 1);
+        py.set(((e.clientY - r.top) / r.height) * 2 - 1);
+      }}
+      onClick={() => setOn((v) => !v)}
+      aria-label="Tilak"
+    >
+      {/* ring of words that spins in on hover */}
+      <motion.svg
+        viewBox="0 0 200 200"
+        className="absolute -inset-9 md:-inset-11 w-[calc(100%+4.5rem)] h-[calc(100%+4.5rem)] md:w-[calc(100%+5.5rem)] md:h-[calc(100%+5.5rem)] pointer-events-none"
+        initial={false}
+        animate={{ opacity: on ? 1 : 0, scale: on ? 1 : 0.8, rotate: on ? 0 : -60 }}
+        transition={{ type: "spring", stiffness: 160, damping: 18 }}
+        aria-hidden
+      >
+        <defs>
+          <path id="ring" d="M100,100 m-88,0 a88,88 0 1,1 176,0 a88,88 0 1,1 -176,0" />
+        </defs>
+        <g className="animate-spin-slow">
+          <text className="font-mono" fontSize="9.5" letterSpacing="3.2" fill="#111">
+            <textPath href="#ring">MARKETING ✦ STORYTELLING ✦ CONTENT ✦ REDDIT ✦ GROWTH ✦ </textPath>
+          </text>
+        </g>
+      </motion.svg>
+
+      {/* green circle */}
+      <motion.div
+        className="absolute inset-0 rounded-full bg-green-400 border-4 border-white"
+        animate={{ boxShadow: on ? "0 0 70px rgba(74,222,128,0.75)" : "0 0 40px rgba(74,222,128,0.45)" }}
+        transition={{ duration: 0.4 }}
+      />
+      {/* photo: clipped by the circle at the bottom, free at the top so the head pops out */}
+      <div className="absolute inset-x-[4px] bottom-[4px] h-[135%] overflow-hidden rounded-b-full pointer-events-none">
+        <motion.img
+          src="/overlay.png"
+          alt="Tilak"
+          className="absolute bottom-0 left-1/2 w-[112%] max-w-none origin-bottom"
+          initial={false}
+          animate={{ x: "-50%", y: on ? "0%" : "16%", scale: on ? 1.06 : 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 17 }}
+        />
+      </div>
+      {/* a hint chip */}
+      <motion.span
+        className="absolute -right-3 top-3 bg-black text-white text-[11px] font-medium px-2.5 py-1 rounded-full shadow pointer-events-none"
+        initial={false}
+        animate={{ opacity: on ? 1 : 0, scale: on ? 1 : 0.6, rotate: on ? 8 : 0, y: on ? 0 : 8 }}
+        transition={{ type: "spring", stiffness: 260, damping: 15 }}
+      >
+        hey there 👋
+      </motion.span>
+    </motion.div>
+  );
+}
+
 const up = (delay = 0) => ({
   initial: { y: 40, opacity: 0 },
   animate: { y: 0, opacity: 1 },
@@ -37,7 +112,7 @@ export default function Hero() {
   return (
     <div className="relative min-h-[100svh] flex flex-col items-center justify-center pt-28 pb-16">
       {/* portrait over the wall of roles */}
-      <div className="relative w-full flex items-center justify-center py-6 overflow-hidden">
+      <div className="relative w-full flex items-center justify-center pt-16 pb-8 overflow-hidden">
         <motion.div
           className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col gap-2 md:gap-3"
           initial={{ opacity: 0 }}
@@ -50,13 +125,7 @@ export default function Hero() {
           <RoleRow roles={ROLES[3]} speed={140} reverse />
         </motion.div>
         <motion.div {...up(0)} className="relative z-10">
-          <motion.div
-            className="w-52 h-52 md:w-60 md:h-60 rounded-full bg-green-400 overflow-hidden border-4 border-white shadow-[0_0_40px_rgba(74,222,128,0.45)]"
-            whileHover={{ scale: 1.03 }}
-            transition={{ type: "spring", stiffness: 200, damping: 18 }}
-          >
-            <img src="/overlay.png" alt="Tilak" className="w-full h-full object-cover object-top scale-110 translate-y-3" />
-          </motion.div>
+          <Portrait />
         </motion.div>
       </div>
 

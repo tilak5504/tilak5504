@@ -3,8 +3,6 @@ import {
   AnimatePresence,
   MotionConfig,
   motion,
-  useMotionTemplate,
-  useMotionValue,
   useMotionValueEvent,
   useScroll,
   useSpring,
@@ -13,11 +11,8 @@ import { ChevronDown, Menu, X, Camera, ArrowUpRight, MapPin, Calendar } from "lu
 import Hero from "./components/Hero";
 import ProofOfWork from "./components/ProofOfWork";
 import {
-  Magnetic,
   ScrollProgress,
   SectionHeading,
-  SplitReveal,
-  TiltCard,
   ease,
   riseChild,
   staggerParent,
@@ -69,10 +64,9 @@ function Nav() {
       <div className="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between">
         <motion.a
           href="#about"
-          initial={{ rotate: -180, scale: 0 }}
-          animate={{ rotate: 0, scale: 1 }}
-          transition={{ type: "spring", stiffness: 200, damping: 14, delay: 0.1 }}
-          whileHover={{ rotate: 15, scale: 1.1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          whileHover={{ scale: 1.08 }}
         >
           <img src="/logo.svg" alt="Tilak logo" className="w-10 h-10" />
         </motion.a>
@@ -97,11 +91,9 @@ function Nav() {
             </motion.a>
           ))}
           <motion.div variants={{ hidden: { opacity: 0, y: -12 }, show: { opacity: 1, y: 0 } }} className="ml-3">
-            <Magnetic>
-              <a href="/photography" className="flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-orange-500 transition-colors">
-                <Camera className="w-4 h-4" /> Photography
-              </a>
-            </Magnetic>
+            <a href="/photography" className="flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-orange-500 transition-colors">
+              <Camera className="w-4 h-4" /> Photography
+            </a>
           </motion.div>
         </motion.div>
 
@@ -182,21 +174,14 @@ function EducationTimeline() {
                 transition={{ type: "spring", stiffness: 300, damping: 15 }}
               >
                 <span className="block w-5 h-5 rounded-full bg-orange-500 ring-4 ring-white" />
-                <motion.span
-                  className="absolute inset-0 rounded-full bg-orange-500"
-                  initial={{ scale: 1, opacity: 0.6 }}
-                  whileInView={{ scale: 3, opacity: 0 }}
-                  viewport={{ once: true, amount: 1, margin: "0px 0px -35% 0px" }}
-                  transition={{ duration: 1.2, ease: "easeOut" }}
-                />
               </motion.div>
 
               <motion.div
                 className={`ml-12 md:ml-0 md:w-[44%] ${left ? "md:text-right md:pr-4" : "md:pl-4"}`}
-                initial={{ opacity: 0, x: left ? -60 : 60, filter: "blur(8px)" }}
-                whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                initial={{ opacity: 0, x: left ? -40 : 40 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.9, ease }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
               >
                 <span className="font-mono text-xs tracking-widest text-orange-500">{ed.period}</span>
                 <h3 className="text-xl md:text-2xl font-bold mt-1">{ed.school}</h3>
@@ -226,31 +211,17 @@ function EducationTimeline() {
 /* ───────────────────────── jobs ───────────────────────── */
 
 function JobCard({ job, open, onToggle }: { job: Job; open: boolean; onToggle: () => void }) {
-  const mx = useMotionValue(-200);
-  const my = useMotionValue(-200);
-  const spot = useMotionTemplate`radial-gradient(360px circle at ${mx}px ${my}px, rgba(74,222,128,0.16), transparent 60%)`;
-
   return (
-    <motion.div variants={riseChild} style={{ transformPerspective: 1000 }}>
+    <motion.div variants={riseChild}>
       <motion.div
         layout
         onClick={onToggle}
-        onPointerMove={(e) => {
-          const r = e.currentTarget.getBoundingClientRect();
-          mx.set(e.clientX - r.left);
-          my.set(e.clientY - r.top);
-        }}
-        onPointerLeave={() => {
-          mx.set(-200);
-          my.set(-200);
-        }}
         whileHover={{ y: -4 }}
         transition={{ layout: { duration: 0.45, ease } }}
-        className={`group relative overflow-hidden rounded-2xl border-2 bg-white p-5 md:p-6 cursor-pointer transition-[border-color,box-shadow] duration-300 ${
-          open ? "border-black shadow-[6px_6px_0_#4ade80]" : "border-black/10 hover:border-black hover:shadow-[6px_6px_0_#000]"
+        className={`group relative overflow-hidden rounded-2xl border bg-white p-5 md:p-6 cursor-pointer transition-[border-color,box-shadow] duration-300 ${
+          open ? "border-green-400 shadow-[0_0_24px_rgba(74,222,128,0.3)]" : "border-black/10 hover:border-green-400 hover:shadow-[0_0_20px_rgba(74,222,128,0.3)]"
         }`}
       >
-        <motion.div className="pointer-events-none absolute inset-0" style={{ background: spot }} />
         <motion.span
           className="absolute left-0 top-0 bottom-0 w-1.5 bg-green-400 origin-top"
           initial={false}
@@ -258,11 +229,7 @@ function JobCard({ job, open, onToggle }: { job: Job; open: boolean; onToggle: (
           transition={{ duration: 0.5, ease }}
         />
         <motion.div layout="position" className="relative flex items-start gap-4">
-          <motion.div
-            className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-xl border border-black/10 bg-white overflow-hidden"
-            animate={{ rotate: open ? -6 : 0, scale: open ? 1.05 : 1 }}
-            transition={{ type: "spring", stiffness: 260, damping: 15 }}
-          >
+          <motion.div className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-xl border border-black/10 bg-white overflow-hidden">
             <img src={job.logoUrl} alt={`${job.company} logo`} className="w-full h-full object-contain p-2" />
           </motion.div>
           <div className="flex-grow min-w-0">
@@ -331,40 +298,16 @@ function JobList({ jobs }: { jobs: Job[] }) {
 
 /* ───────────────────────── skills ───────────────────────── */
 
-function SkillsBand() {
-  const top = skillGroups.slice(0, 3).flatMap((g) => g.skills.slice(0, 5));
-  const row = (items: string[], reverse: boolean, outline: boolean) => (
-    <div className="flex overflow-hidden" aria-hidden>
-      <div className="flex shrink-0 gap-8 pr-8 animate-marquee whitespace-nowrap" style={{ animationDuration: "45s", animationDirection: reverse ? "reverse" : "normal" }}>
-        {[...items, ...items, ...items, ...items].map((s, i) => (
-          <span key={i} className={`text-3xl md:text-5xl font-bold ${outline ? "text-transparent hero-outline" : "text-black"}`}>
-            {s} <span className="text-green-400">✦</span>
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-  return (
-    <div className="relative -mx-4 py-6 my-4 -rotate-2 bg-green-400 border-y-2 border-black overflow-hidden">
-      {row(top, false, false)}
-      <div className="h-3" />
-      {row([...top].reverse(), true, true)}
-    </div>
-  );
-}
-
 function SkillChip({ skill }: { skill: string }) {
   return (
     <motion.span
       variants={{
-        hidden: { opacity: 0, scale: 0.5, y: 20, rotate: -8 },
-        show: { opacity: 1, scale: 1, y: 0, rotate: 0, transition: { type: "spring", stiffness: 300, damping: 18 } },
+        hidden: { opacity: 0, y: 12 },
+        show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
       }}
-      whileHover={{ y: -4, rotate: -2 }}
-      className="group relative inline-flex overflow-hidden rounded-full border-2 border-black px-4 py-2 text-sm font-medium bg-white cursor-default shadow-[3px_3px_0_#000]"
+      className="inline-flex rounded-full border border-black/15 px-4 py-2 text-sm font-medium bg-white cursor-default transition-all duration-300 hover:bg-green-400 hover:border-green-400 hover:-translate-y-0.5 hover:shadow-[0_0_15px_rgba(74,222,128,0.5)]"
     >
-      <span className="absolute inset-0 bg-green-400 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
-      <span className="relative">{skill}</span>
+      {skill}
     </motion.span>
   );
 }
@@ -372,8 +315,7 @@ function SkillChip({ skill }: { skill: string }) {
 function Skills() {
   return (
     <div>
-      <SkillsBand />
-      <div className="max-w-6xl mx-auto mt-16 grid md:grid-cols-2 gap-x-12 gap-y-12">
+      <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-x-12 gap-y-12">
         {skillGroups.map((g, gi) => (
           <motion.div
             key={g.title}
@@ -387,7 +329,6 @@ function Skills() {
               variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0 } }}
             >
               <span className="text-orange-500">0{gi + 1}</span> {g.title}
-              {gi === 0 && <span className="ml-1 px-2 py-0.5 rounded-full bg-black text-white text-[10px] tracking-widest">NEW</span>}
             </motion.h3>
             <div className="flex flex-wrap gap-3">
               {g.skills.map((s) => (
@@ -407,12 +348,11 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
   const [open, setOpen] = useState(false);
   return (
     <motion.div variants={riseChild} className="h-full">
-      <TiltCard className="h-full rounded-3xl">
-        <motion.div
+      <motion.div
           layout
           transition={{ layout: { duration: 0.45, ease } }}
           onClick={() => setOpen((o) => !o)}
-          className="h-full rounded-3xl border-2 border-black bg-white p-6 md:p-7 cursor-pointer shadow-[6px_6px_0_#000] hover:shadow-[10px_10px_0_#4ade80] transition-shadow duration-300 flex flex-col"
+          className="h-full rounded-2xl border border-black/10 bg-white p-6 md:p-7 cursor-pointer shadow-sm hover:-translate-y-2 hover:border-green-400 hover:shadow-[0_0_20px_rgba(74,222,128,0.3)] transition-all duration-300 flex flex-col"
         >
           <motion.div layout="position" className="flex items-start justify-between">
             <span className="font-mono text-5xl font-bold text-black/10">{String(i + 1).padStart(2, "0")}</span>
@@ -438,7 +378,6 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
             </motion.span>
           </motion.span>
         </motion.div>
-      </TiltCard>
     </motion.div>
   );
 }
@@ -479,7 +418,7 @@ function App() {
             </div>
           </section>
 
-          <section className="py-24 px-4 overflow-hidden" id="skills">
+          <section className="py-24 px-4" id="skills">
             <SectionHeading index="04" kicker="What I bring" title="Skills" />
             <Skills />
           </section>
@@ -505,27 +444,31 @@ function App() {
 
           <footer className="py-28 px-4 overflow-hidden" id="contact-me">
             <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-5xl md:text-7xl font-bold tracking-tight">
-                <SplitReveal text="Let's Connect" />
-              </h2>
+              <motion.h2
+                className="text-4xl md:text-6xl font-bold"
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+              >
+                Let's Connect
+              </motion.h2>
               <motion.p
                 className="text-xl mt-6 mb-10 text-black/70"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, ease, delay: 0.4 }}
+                transition={{ duration: 0.8, ease, delay: 0.15 }}
               >
                 Have a project in mind? Let's create something amazing together.
               </motion.p>
-              <motion.div initial={{ opacity: 0, scale: 0.6 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ type: "spring", stiffness: 200, damping: 14, delay: 0.6 }}>
-                <Magnetic strength={0.4}>
-                  <a
+              <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}>
+                <a
                     href="mailto:pasupureddytilak@gmail.com"
                     className="inline-flex items-center gap-3 py-4 px-9 rounded-full text-lg font-bold bg-black text-white hover:bg-green-400 hover:text-black transition-colors"
                   >
                     Get in Touch <ArrowUpRight className="w-5 h-5" />
                   </a>
-                </Magnetic>
               </motion.div>
             </div>
           </footer>

@@ -86,30 +86,28 @@ export function BlurWords({ text, className = "", delay = 0, animateNow = false 
   );
 }
 
-/* Section heading: index label, masked title, a line that draws itself */
+/* Section heading: fades up, a short line draws underneath */
 export function SectionHeading({ index, title, kicker }: { index: string; title: string; kicker?: string }) {
   return (
-    <div className="text-center mb-14 md:mb-16">
-      <motion.p
-        className="font-mono text-xs tracking-[0.35em] text-orange-500 uppercase"
-        initial={{ opacity: 0, letterSpacing: "0.8em" }}
-        whileInView={{ opacity: 1, letterSpacing: "0.35em" }}
-        viewport={{ once: true, amount: 0.8 }}
-        transition={{ duration: 0.9, ease }}
-      >
+    <motion.div
+      className="text-center mb-12 md:mb-14"
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.6 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      <p className="font-mono text-xs tracking-[0.3em] text-orange-500 uppercase">
         {index} {kicker ? `— ${kicker}` : ""}
-      </motion.p>
-      <h2 className="text-4xl md:text-6xl font-bold mt-3 tracking-tight">
-        <SplitReveal text={title} />
-      </h2>
+      </p>
+      <h2 className="text-4xl md:text-5xl font-bold mt-3">{title}</h2>
       <motion.div
-        className="mx-auto mt-5 h-[3px] w-24 bg-green-400 origin-left rounded-full"
+        className="mx-auto mt-4 h-1 w-16 bg-green-400 origin-center rounded-full"
         initial={{ scaleX: 0 }}
         whileInView={{ scaleX: 1 }}
-        viewport={{ once: true, amount: 0.8 }}
-        transition={{ duration: 0.9, ease, delay: 0.35 }}
+        viewport={{ once: true, amount: 0.6 }}
+        transition={{ duration: 0.6, ease: "easeOut", delay: 0.25 }}
       />
-    </div>
+    </motion.div>
   );
 }
 
@@ -188,6 +186,6 @@ export const staggerParent = (stagger = 0.08, delay = 0): Variants => ({
 });
 
 export const riseChild: Variants = {
-  hidden: { opacity: 0, y: 40, rotateX: 14, filter: "blur(6px)" },
-  show: { opacity: 1, y: 0, rotateX: 0, filter: "blur(0px)", transition: { duration: 0.8, ease } },
+  hidden: { opacity: 0, y: 30 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };

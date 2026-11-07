@@ -3,6 +3,7 @@ import {
   AnimatePresence,
   motion,
   useMotionValue,
+  useMotionValueEvent,
   useReducedMotion,
   useScroll,
   useSpring,
@@ -51,6 +52,33 @@ function shutter() {
     };
     click(0, 0.05, 0.9);
     click(0.09, 0.07, 0.6);
+  } catch {
+    /* sound is optional */
+  }
+}
+
+/* soft ratchet click, like advancing a film roll */
+let lastTick = 0;
+function tick() {
+  try {
+    const now = performance.now();
+    if (now - lastTick < 55) return;
+    lastTick = now;
+    ctx = ctx || new (window.AudioContext || (window as any).webkitAudioContext)();
+    const len = 0.018;
+    const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * len), ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 6);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const f = ctx.createBiquadFilter();
+    f.type = "bandpass";
+    f.frequency.value = 3200 + Math.random() * 600;
+    f.Q.value = 4;
+    const g = ctx.createGain();
+    g.gain.value = 0.12;
+    src.connect(f).connect(g).connect(ctx.destination);
+    src.start();
   } catch {
     /* sound is optional */
   }
@@ -136,7 +164,7 @@ function Frame({ p, index, roll, onOpen, onHover }: { p: Photo; index: number; r
   useEffect(() => {
     if (developed || !ref.current) return;
     const io = new IntersectionObserver(([e]) => e.isIntersecting && setDeveloped(true), {
-      rootMargin: "0px -40% 0px -40%",
+      rootMargin: "0px -40% 0px 0px",
       threshold: 0,
     });
     io.observe(ref.current);
@@ -160,12 +188,12 @@ function Frame({ p, index, roll, onOpen, onHover }: { p: Photo; index: number; r
           alt={p.title}
           loading="lazy"
           draggable={false}
-          className="w-full h-full object-cover transition-[filter,transform] duration-[1800ms] ease-out group-hover:scale-[1.03]"
+          className="w-full h-full object-cover transition-[filter,transform] duration-[700ms] ease-out group-hover:scale-[1.03]"
           style={{ filter: developed ? "none" : NEGATIVE }}
         />
         {/* orange film-base tint that fades as the frame develops */}
         <span
-          className="absolute inset-0 bg-[#c8742c] mix-blend-multiply transition-opacity duration-[1800ms] pointer-events-none"
+          className="absolute inset-0 bg-[#c8742c] mix-blend-multiply transition-opacity duration-[700ms] pointer-events-none"
           style={{ opacity: developed ? 0 : 0.55 }}
         />
         <span className="absolute inset-x-0 bottom-0 p-3 text-left font-mono text-[11px] text-[#efe7d2] bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
@@ -231,7 +259,7 @@ function Viewfinder({ target, hidden }: { target: Photo | null; hidden: boolean 
 }
 
 /* ───────────── a roll of film that scrolls sideways ───────────── */
-function FilmRoll({ roll, rollIndex, onOpen, onHover }: { roll: Roll; rollIndex: number; onOpen: (r: number, i: number) => void; onHover: (p: Photo | null) => void }) {
+function FilmRoll({ roll, rollIndex, onOpen, onHover, sound }: { roll: Roll; rollIndex: number; onOpen: (r: number, i: number) => void; onHover: (p: Photo | null) => void; sound: boolean }) {
   const reduce = useReducedMotion();
   const section = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
@@ -254,6 +282,19 @@ function FilmRoll({ roll, rollIndex, onOpen, onHover }: { roll: Roll; rollIndex:
 
   const { scrollYProgress } = useScroll({ target: section, offset: ["start start", "end end"] });
   const raw = useTransform(scrollYProgress, [0, 1], [0, -dist]);
+  // one soft click for every ~90px the film moves, only when sound is on
+  const travelled = useRef(0);
+  const last = useRef<number | null>(null);
+  useMotionValueEvent(raw, "change", (v) => {
+    if (last.current !== null && sound) {
+      travelled.current += Math.abs(v - last.current);
+      if (travelled.current > 90) {
+        travelled.current = 0;
+        tick();
+      }
+    }
+    last.current = v;
+  });
   const x = useSpring(raw, { stiffness: 120, damping: 30, mass: 0.4 });
   const tilt = rollIndex % 2 === 0 ? -1.2 : 1.2;
   const bar = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
@@ -507,7 +548,7 @@ export default function Photography() {
       </section>
 
       {rolls.map((roll, ri) => (
-        <FilmRoll key={roll.num} roll={roll} rollIndex={ri} onOpen={openPhoto} onHover={setHovered} />
+        <FilmRoll key={roll.num} roll={roll} rollIndex={ri} onOpen={openPhoto} onHover={setHovered} sound={sound} />
       ))}
 
       {/* end */}

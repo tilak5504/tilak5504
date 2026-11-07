@@ -57,10 +57,10 @@ export default function Hero() {
         transition={{ duration: 1, ease: "easeOut", delay: 0.2 }} // Delayed animation for smooth effect
         className="text-center"
       >
-        <h1 className="text-7xl min-w-full font-bold mb-6">
+        <h1 className="text-5xl sm:text-6xl md:text-7xl min-w-full font-bold mb-6 px-4">
           Hi, I am <span className="hero-name-highlight">Tilak</span>
         </h1>
-        <p className="text-2xl mb-8 orange-glow">
+        <p className="text-lg sm:text-2xl mb-8 px-6 orange-glow">
           Marketing meets storytelling—crafting digital experiences that engage.
         </p>
 
@@ -68,7 +68,7 @@ export default function Hero() {
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 1, ease: "easeOut", delay: 0.4 }} // Slight delay for buttons
-          className="flex justify-center gap-6 items-center"
+          className="flex flex-col sm:flex-row justify-center gap-6 items-center"
         >
           <a
             href="/resume.pdf"

@@ -1,26 +1,7 @@
-import React, { useEffect, useState } from "react";
-import {
-  Mail,
-  Linkedin,
-  Download,
-  ChevronDown,
-  Image,
-  Youtube,
-  Film,
-  Instagram,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronDown, Menu, X, Camera } from "lucide-react";
 import Hero from "./components/Hero";
-interface WorkItem {
-  title: string;
-  link: string;
-}
-
-interface ProofOfWork {
-  title: string;
-  icon: React.ReactNode;
-  items: WorkItem[];
-}
-
+import ProofOfWork from "./components/ProofOfWork";
 interface Project {
   name: string;
   details: string;
@@ -38,23 +19,26 @@ interface Internship {
   responsibilities: string[];
   logoUrl: string;
 }
-interface WorkExperience {
-  title: string;
-  icon: React.ReactNode;
-  items: WorkItem[];
-}
+
+const NAV = [
+  "About",
+  "Education",
+  "Experience",
+  "Internships",
+  "Skills",
+  "Projects",
+  "Proof of Work",
+  "Contact Me",
+];
 
 function App() {
   const [expandedInternship, setExpandedInternship] = useState<number | null>(
   null
 );
 
-const [expandedWorkExperience, setExpandedWorkExperience] =
-  useState<number | null>(null);
-
-const [hoveredSkill, setHoveredSkill] = useState<number | null>(null);
+const [expandedWork, setExpandedWork] = useState<number | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [expandedProject, setExpandedProject] = useState<number | null>(null);
-  const [expandedProof, setExpandedProof] = useState<number | null>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -70,7 +54,7 @@ const [hoveredSkill, setHoveredSkill] = useState<number | null>(null);
 
     document
       .querySelectorAll(
-        ".timeline-item, .internship-item, .skill-item, .project-item, .proof-item"
+        ".timeline-item, .internship-item, .skill-item, .project-item"
       )
       .forEach((item) => {
         observer.observe(item);
@@ -103,111 +87,6 @@ const [hoveredSkill, setHoveredSkill] = useState<number | null>(null);
     "Aptitude",
     "Multi-tasking",
     "Eye-to-detail",
-  ];
-
-  const proofOfWork: ProofOfWork[] = [
-    {
-      title: "Posters",
-      icon: <Image className="w-6 h-6" />,
-      items: [
-        {
-          title: "Collage",
-          link: "https://www.canva.com/design/DAGYRERByLw/-RY6HbBP_SPSAFwKx74yYw/edit?utm_content=DAGYRERByLw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
-        },
-        {
-          title: "Poster",
-          link: "https://www.canva.com/design/DAGPykRsWkY/IjXo8fGbssM9K-HxsbwJiQ/edit?utm_content=DAGPykRsWkY&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
-        },
-        {
-          title: "College Event 1",
-          link: "https://www.canva.com/design/DAF86i4gZQk/jEfwriOwaVaZDdKT05hbIg/edit?utm_content=DAF86i4gZQk&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
-        },
-        {
-          title: "College Event 2",
-          link: "https://www.canva.com/design/DAF8lu9J9t8/y0SoaqE54cEbSjcUYnCqUw/edit?utm_content=DAF8lu9J9t8&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
-        },
-        {
-          title: "College Event 3",
-          link: "https://www.canva.com/design/DAF7_OnQE88/04dkg5JRax2LXlt-qkOBwQ/edit?utm_content=DAF7_OnQE88&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
-        },
-        {
-          title: "Client Work 1",
-          link: "https://www.canva.com/design/DAF7XYmg6NM/e5RQnFG1DFFTYuR8zN_usQ/edit?utm_content=DAF7XYmg6NM&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
-        },
-        {
-          title: "Client Work 2",
-          link: "https://www.canva.com/design/DAGG6ZIAEzM/fobbKkXHSW0C92jU_pmkEA/edit?utm_content=DAGG6ZIAEzM&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
-        },
-        {
-          title: "Ready to Make College Event",
-          link: "https://www.canva.com/design/DAGKhiQy5kw/QsOwbzZ4FkaRr9QamccjSA/edit?utm_content=DAGKhiQy5kw&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton",
-        },
-      ],
-    },
-    {
-      title: "Reels",
-      icon: <Film className="w-6 h-6" />,
-      items: [
-        {
-          title: "@staidindia Typography Reel 1",
-          link: "https://www.instagram.com/reel/DFnQGZZty45/?igsh=MWZwbHdsZmM4dzFsdQ==",
-        },
-        {
-          title: "@tilak.5504 Car Edit",
-          link: "https://www.instagram.com/reel/DF2pQKqvNBq/?igsh=MWw3dnMzYWIwOHUwcw==",
-        },
-        {
-          title: "@staidindia Typography Reel 2",
-          link: "https://www.instagram.com/reel/DBdroB5T8ri/?igsh=MWc5NGJhbG1ycnljeQ==",
-        },
-        {
-          title: "@staidindia Typography Reel 3",
-          link: "https://www.instagram.com/reel/DDv7VUvIpwZ/?igsh=MWx3eDI3dnZtcHN0NQ==",
-        },
-        {
-          title: "@staidindia Meme Reel 1",
-          link: "https://www.instagram.com/reel/C7WnEo3iaGV/?igsh=MTA4cGtmb3Bqd2xrOA==",
-        },
-        {
-          title: "@staidindia Meme Reel 2",
-          link: "https://www.instagram.com/reel/C4dmiWgiM2V/?igsh=amNjdzl4YmEyZGFz",
-        },
-        {
-          title: "@aadit_the_highest_peak Reel Edit 1",
-          link: "https://www.instagram.com/reel/C3Xp9UMvyZt/?igsh=eDhwanVzbW55OXQ4",
-        },
-        {
-          title: "@aadit_the_highest_peak Reel Edit 2",
-          link: "https://www.instagram.com/reel/C3MsKciPmEi/?igsh=MWlncjhxZHFxZzY5Mw==",
-        },
-        {
-          title: "@fictionalframes Escape Shortfilm",
-          link: "https://youtu.be/wOwXPLGLPjY?si=TLAEPtZh5qpXSekw",
-        },
-      ],
-    },
-    {
-      title: "Podcasts",
-      icon: <Youtube className="w-6 h-6" />,
-      items: [
-        {
-          title: "@acuvate Podcast 1",
-          link: "https://youtu.be/3DsbOnrOvJs?si=LXh7SzGR6gpN6rjE",
-        },
-        {
-          title: "@acuvate Podcast 2",
-          link: "https://youtu.be/jXGHHk7ZOPI?si=b4XhvuuLIqcHsDG6",
-        },
-        {
-          title: "@lifeafter.agbs Podcast 1",
-          link: "https://www.instagram.com/reel/Cz87Jy-PcyP/?igsh=dnFmamhiZWw4bjRi",
-        },
-        {
-          title: "@lifeafter.agbs Podcast 2",
-          link: "https://www.instagram.com/reel/Czgh9mSMfIQ/?igsh=MWN6am1lYmt0MjA5bw==",
-        },
-      ],
-    },
   ];
 
   const projects: Project[] = [
@@ -323,11 +202,6 @@ const workExperience: Internship[] = [
     setExpandedInternship(expandedInternship === index ? null : index);
   };
 
-  const toggleProof = (e: React.MouseEvent, index: number) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setExpandedProof(expandedProof === index ? null : index);
-  };
 
   return (
     <div className="min-h-screen bg-white text-black relative">
@@ -348,35 +222,58 @@ const workExperience: Internship[] = [
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <img
-                src="/logo.svg"
-                alt="Logo"
-                className="w-10 h-10" // Same size as Cpu icon
-              />
-            </div>
+            <a href="#about" className="flex items-center space-x-2">
+              <img src="/logo.svg" alt="Tilak logo" className="w-10 h-10" />
+            </a>
 
-            <div className="hidden md:flex space-x-8">
-              {[
-                "About",
-                "Education",
-                "Internships",
-                "Skills",
-                "Projects",
-                "Proof of Work",
-                "Contact Me",
-              ].map((item) => (
+            <div className="hidden lg:flex items-center space-x-7">
+              {NAV.map((item) => (
                 <a
                   key={item}
                   href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="text-lg font-medium nav-link relative"
+                  className="text-base font-medium nav-link relative"
                 >
                   {item}
                 </a>
               ))}
+              <a
+                href="/photography"
+                className="flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-orange-500 transition-colors"
+              >
+                <Camera className="w-4 h-4" /> Photography
+              </a>
             </div>
+
+            <button
+              className="lg:hidden p-2 rounded-lg hover:bg-black/5"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={menuOpen}
+            >
+              {menuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+            </button>
           </div>
         </div>
+        {menuOpen && (
+          <div className="lg:hidden border-t border-black/10 bg-white px-4 pb-6 pt-2 flex flex-col">
+            {NAV.map((item) => (
+              <a
+                key={item}
+                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                onClick={() => setMenuOpen(false)}
+                className="py-3 text-lg font-medium border-b border-black/5"
+              >
+                {item}
+              </a>
+            ))}
+            <a
+              href="/photography"
+              className="mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-black text-white font-medium"
+            >
+              <Camera className="w-4 h-4" /> Photography
+            </a>
+          </div>
+        )}
       </nav>
 
       <div className="relative z-10" id="about">
@@ -390,7 +287,7 @@ const workExperience: Internship[] = [
               <div className="space-y-12">
                 {[
                   {
-                    school: "SVKM's NMIMS Univerisity, Hyderabad",
+                    school: "SVKM's NMIMS University, Hyderabad",
                     degree: "Master of Business Administration - MBA",
                     period: "2026 - 2028",
                     grade: "Grade: -",
@@ -447,6 +344,77 @@ const workExperience: Internship[] = [
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-20 px-4 bg-white" id="experience">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-4xl font-bold mb-12 text-center">
+              Work Experience
+            </h2>
+            <div className="space-y-6">
+              {workExperience.map((internship, index) => (
+                <div
+                  key={index}
+                  className="internship-item opacity-0 transform translate-y-10 transition-all duration-500 ease-out"
+                  onClick={() => setExpandedWork(expandedWork === index ? null : index)}
+                >
+                  <div className="sketch-border bg-white p-6 rounded-lg cursor-pointer">
+                    <div className="flex items-start gap-4">
+                      <div className="w-16 h-16 flex-shrink-0">
+                        <div className="w-full h-full relative sketch-border rounded-lg overflow-hidden">
+                          <img
+                            src={internship.logoUrl}
+                            alt={`${internship.company} logo`}
+                            className="w-full h-full object-contain p-2 sketch-image"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex-grow">
+                        <h3 className="text-xl font-bold">
+                          {internship.company}
+                        </h3>
+                        <p className="text-lg hero-name-highlight">
+                          {internship.position}
+                        </p>
+                        <p className="text-sm text-gray-600">
+                          {internship.subtitle}
+                        </p>
+                        <p className="text-sm">{internship.duration}</p>
+                        <p className="text-sm orange-glow">
+                          {internship.location}
+                        </p>
+                      </div>
+                      <ChevronDown
+                        className={`w-6 h-6 flex-shrink-0 transform transition-transform duration-300 ${
+                          expandedWork === index ? "rotate-180" : ""
+                        }`}
+                      />
+                    </div>
+
+                    <div
+                      className={`mt-4 overflow-hidden transition-all duration-300 ${
+                        expandedWork === index ? "max-h-96" : "max-h-0"
+                      }`}
+                    >
+                      <div className="pt-4 border-t border-gray-200">
+                        <h4 className="font-bold mb-2">Responsibilities:</h4>
+                        <ul className="space-y-2 text-justify">
+                          {internship.responsibilities.map(
+                            (responsibility, idx) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <span className="w-2 h-2 mt-2 bg-green-400 rounded-full flex-shrink-0"></span>
+                                <span>{responsibility}</span>
+                              </li>
+                            )
+                          )}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -530,9 +498,7 @@ const workExperience: Internship[] = [
                 <div
                   key={index}
                   className="skill-item"
-                  onMouseEnter={() => setHoveredSkill(index)}
-                  onMouseLeave={() => setHoveredSkill(null)}
-                >
+                                  >
                   <div className="skill-cube">
                     <div className="skill-cube-face front">
                       <span className="text-sm font-medium">{skill}</span>
@@ -594,68 +560,9 @@ const workExperience: Internship[] = [
           </div>
         </section>
 
-        <section className="py-20 px-4 bg-black" id="proof-of-work">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl font-bold mb-12 text-center text-white">
-              Proof of Work
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {proofOfWork.map((category, index) => (
-                <div
-                  key={index}
-                  className="proof-item opacity-0 transform translate-y-10 transition-all duration-500 ease-out"
-                >
-                  <div className="proof-card sketch-border bg-black/50 p-6 rounded-lg">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="text-green-400">{category.icon}</div>
-                      <h3 className="text-xl font-bold text-white">
-                        {category.title}
-                      </h3>
-                    </div>
+        <ProofOfWork />
 
-                    <button
-                      className="w-full flex items-center justify-between px-4 py-2 text-white hover:text-orange-500 transition-colors"
-                      onClick={() =>
-                        setExpandedProof(expandedProof === index ? null : index)
-                      }
-                    >
-                      <span>View Work</span>
-                      <ChevronDown
-                        className={`w-5 h-5 text-orange-500 transform transition-transform duration-300 ${
-                          expandedProof === index ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-
-                    <div
-                      className={`mt-4 overflow-hidden transition-all duration-300 ${
-                        expandedProof === index ? "max-h-[800px]" : "max-h-0"
-                      }`}
-                    >
-                      <ul className="space-y-3">
-                        {category.items.map((item, idx) => (
-                          <li key={idx} className="flex items-start gap-3">
-                            <span className="w-2 h-2 mt-2 bg-green-400 rounded-full flex-shrink-0"></span>
-                            <a
-                              href={item.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-white/80 hover:text-orange-500 transition-colors"
-                            >
-                              {item.title}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <footer className="py-20 px-4" id="contact-us">
+        <footer className="py-20 px-4" id="contact-me">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold mb-6">Let's Connect</h2>
             <p className="text-xl mb-8">

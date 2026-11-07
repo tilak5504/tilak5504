@@ -11,6 +11,10 @@ export default {
           '60%': { transform: 'translate(-2%,-1%)' },
           '80%': { transform: 'translate(3%,3%)' },
         },
+        marquee: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-50%)' },
+        },
         eq: {
           '0%,100%': { height: '25%' },
           '50%': { height: '100%' },
@@ -24,6 +28,8 @@ export default {
         grain: 'grain 0.9s steps(4) infinite',
         leak: 'leak 12s ease-in-out infinite',
         eq: 'eq 0.8s ease-in-out infinite',
+        marquee: 'marquee 60s linear infinite',
+        'spin-slow': 'spin 22s linear infinite',
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],

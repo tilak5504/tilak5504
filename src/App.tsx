@@ -1,626 +1,539 @@
-import { useEffect, useState } from "react";
-import { ChevronDown, Menu, X, Camera } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  AnimatePresence,
+  MotionConfig,
+  motion,
+  useMotionTemplate,
+  useMotionValue,
+  useMotionValueEvent,
+  useScroll,
+  useSpring,
+} from "framer-motion";
+import { ChevronDown, Menu, X, Camera, ArrowUpRight, MapPin, Calendar } from "lucide-react";
 import Hero from "./components/Hero";
 import ProofOfWork from "./components/ProofOfWork";
-interface Project {
-  name: string;
-  details: string;
-  timeline: string;
-  location: string;
-  description: string;
-}
+import {
+  Magnetic,
+  ScrollProgress,
+  SectionHeading,
+  SplitReveal,
+  TiltCard,
+  ease,
+  riseChild,
+  staggerParent,
+} from "./components/motion";
+import {
+  education,
+  internships,
+  projects,
+  skillGroups,
+  workExperience,
+  type Job,
+  type Project,
+} from "./data/profile";
 
-interface Internship {
-  company: string;
-  position: string;
-  subtitle: string;
-  duration: string;
-  location: string;
-  responsibilities: string[];
-  logoUrl: string;
-}
+const NAV = ["About", "Education", "Experience", "Internships", "Skills", "Projects", "Proof of Work", "Contact Me"];
+const slug = (s: string) => s.toLowerCase().replace(/\s+/g, "-");
 
-const NAV = [
-  "About",
-  "Education",
-  "Experience",
-  "Internships",
-  "Skills",
-  "Projects",
-  "Proof of Work",
-  "Contact Me",
-];
+/* ───────────────────────── navigation ───────────────────────── */
 
-function App() {
-  const [expandedInternship, setExpandedInternship] = useState<number | null>(
-  null
-);
-
-const [expandedWork, setExpandedWork] = useState<number | null>(null);
+function Nav() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [expandedProject, setExpandedProject] = useState<number | null>(null);
+  const [hidden, setHidden] = useState(false);
+  const [active, setActive] = useState("about");
+  const { scrollY } = useScroll();
+
+  useMotionValueEvent(scrollY, "change", (y) => {
+    const prev = scrollY.getPrevious() ?? 0;
+    setHidden(y > prev && y > 400 && !menuOpen);
+  });
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-          }
-        });
-      },
-      { threshold: 0.1 }
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
+      { rootMargin: "-45% 0px -50% 0px" }
     );
-
-    document
-      .querySelectorAll(
-        ".timeline-item, .internship-item, .skill-item, .project-item"
-      )
-      .forEach((item) => {
-        observer.observe(item);
-      });
-
-    return () => observer.disconnect();
+    NAV.forEach((n) => {
+      const el = document.getElementById(slug(n));
+      if (el) io.observe(el);
+    });
+    return () => io.disconnect();
   }, []);
 
-  const skills = [
-    "Reddit Marketing",
-    "Subreddit Strategy",
-    "Reddit Ads",
-    "AEO",
-    "Organic Brand Mentions",
-    "Community Building",
-    "Keyword Research",
-    "Meta Ads",
-    "Performance Marketing",
-    "Marketing Analytics",
-    "Market Research",
-    "Generative AI",
-    "Video Editing",
-    "Stakeholder Management",
-    "Strategic Thinking",
-    "Canva",
-    "MS Office",
-    "Google Suite",
-    "SEO",
-    "Content Creation",
-    "Podcast Production",
-    "Hubspot Marketing Hub",
-    "Email Marketing",
-    "Copywriting",
-    "Telecalling",
-    "Cold Mailing",
-    "Social Media Marketing",
-    "HTML",
-    "Communication",
-    "Entrepreneurship",
-    "Time Management",
-    "Adaptability",
-    "Problem Solving",
-    "Teamwork",
-    "Creativity",
-    "Aptitude",
-    "Multi-tasking",
-    "Eye-to-detail",
-  ];
-
-  const projects: Project[] = [
-    {
-      name: "New Product Development",
-      details: "GoMechanic · Live Project",
-      timeline: "September 2026 - Present",
-      location: "Strategy & Virality",
-      description:
-        "Benchmarking 15 auto-accessory categories worth ₹1,687 Cr+ in stated TAM, analysing competitive pricing, product breadth, packaging trends and promotional strategies. Building a virality playbook for Amazon and Flipkart, with share-worthy product, packaging and unboxing concepts for car fresheners, dashboard décor and showpieces.",
-    },
-    {
-      name: "Videographer",
-      details: "The Staid App · Freelance",
-      timeline: "August 2024 - September 2024 · 2 months",
-      location: "Rajahmundry, Andhra Pradesh, India · On-site",
-      description:
-        "Shot 15+ videos hiring a UGC creator and made typography videos for Instagram and YouTube.",
-    },
-    {
-      name: "Social Media Manager",
-      details: "The Staid App · Freelance",
-      timeline: "January 2024 - May 2024 · 5 months",
-      location: "Remote",
-      description:
-        "Managed and grew social media presence for Staid.india, achieving 200 followers to 3000 followers on Instagram within 3 months. Monitored and analyzed performance using Meta Business Suite, achieving a 250% improvement in campaign effectiveness. Developed a content strategy with over 100 targeted keywords and 120+ posts, resulting in a 30% increase in engagement rates. Onboarded 7 UGC creators, increasing brand mentions by 40%. Executed 4 giveaway campaigns, averaging 40% participation increase. Engaged with followers, responding to over 500 comments.",
-    },
-    {
-      name: "Podcast Initiator",
-      details: "Life After AGBS · Self-employed",
-      timeline: "September 2023 - May 2024 · 9 months",
-      location: "Rajahmundry, Andhra Pradesh, India · Hybrid",
-      description:
-        "Successfully launched and maintained a podcast series within the college community. Published three podcast episodes online featuring AGBS Alumni. Organized one offline event to strengthen community engagement. Grew social media presence to 250 followers within a month. Received positive feedback from listeners, indicating a positive impact.",
-    },
-  ];
-const workExperience: Internship[] = [
-  {
-    company: "Comment Seed",
-    position: "Founding Team · Client Lead",
-    subtitle: "Comment Seed · Part-time",
-    duration: "Part-time · Present",
-    location: "Reddit marketing for AI & SaaS",
-    responsibilities: [
-      "Part of the founding team at Comment Seed, a Reddit marketing engine for AI and SaaS brands.",
-      "Client lead for one of our major clients, owning their Reddit strategy and delivery end-to-end.",
-      "Build presence in relevant subreddits and spark organic discussions that keep the brand mentioned consistently.",
-      "Set up official brand accounts for an established identity, and run Reddit Ads for a steady paid presence.",
-      "Target keywords and AEO prompts so clients show up in search and AI answers, and grow brand subreddits into communities.",
-    ],
-    logoUrl: "/commentseed.svg",
-  },
-  {
-    company: "StudioExalt",
-    position: "Social Media Manager",
-    subtitle: "StudioExalt · Work Experience",
-    duration: "Mar 2026 - Jun 2026 · 4 mos",
-    location: "Hybrid",
-    responsibilities: [
-      "Managed 7+ client accounts across food, café, skincare, corporate and interior design brands.",
-      "Increased average organic reach by 110% through strategic content planning and short-form video optimization.",
-      "Designed 40+ marketing creatives leveraging AI tools to improve efficiency and output.",
-    ],
-    logoUrl: "/logo.svg",
-  },
-];
-  const internships: Internship[] = [
-    {
-      company: "Swiggy",
-      position: "Culture & Communications Intern",
-      subtitle: "Swiggy · Internship",
-      duration: "Apr 2025 - May 2025 · 2 mos",
-      location: "Bangalore, Karnataka, India · Hybrid",
-      responsibilities: [
-        "Ideated, scripted, and packaged 2+ internal videos to drive employee engagement and cultural storytelling.",
-        "Wrote growth stories of Swiggsters for the Swiggy Verse platform, showcasing employee journeys.",
-        "Built custom GPTs to streamline internal communications and simplify org-wide information flows.",
-        "Shared 25+ GenAI tips on Slack, promoting practical Gemini use cases across cross-functional teams.",
-        "Coordinated with stakeholders to collect story inputs in both text and video formats.",
-      ],
-      logoUrl:
-        "https://cdn.brandfetch.io/idQZk-y8Sy/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B",
-    },
-    {
-      company: "Acuvate",
-      position: "Marketing Intern",
-      subtitle: "Acuvate · Internship",
-      duration: "Dec 2024 - Mar 2025 · 4 mos",
-      location: "Hyderabad, Telangana, India · On-site",
-      responsibilities: [
-        "Revamped all blog pages and landing pages, aligning them with SEO best practices, resulting in a 120% increase in active users.",
-        "Led the end-to-end execution of webinar promotions using third-party platforms: handled platform selection, deal closures, event optimization, and lead tracking, securing 250+ registrations from targeted industries.",
-        "Directed and participated in podcast production, client shoots, and website content creation, enhancing brand storytelling and visual identity.",
-        "Managed company social media accounts and expanded community engagement across LinkedIn, Medium, Reddit, and Quora to strengthen thought leadership and brand visibility.",
-        "Assisted in setting up or optimizing email marketing campaigns for nurturing leads from webinars and blogs.",
-      ],
-      logoUrl:
-        "https://acuvate.com/uk/wp-content/uploads/2022/01/cropped-acu-favicon.png",
-    },
-    {
-      company: "Solvprob Innovations Pvt. Ltd",
-      position: "Marketing Intern",
-      subtitle: "Solvprob Innovations Pvt. Ltd · Internship",
-      duration: "May 2024 - Jun 2024 · 2 mos",
-      location: "Hyderabad, Telangana, India · On-site",
-      responsibilities: [
-        "Curated content calendars, increased content output by 80%",
-        "Managed social media, increased engagement by 330%",
-        "Executed Meta ads for PI Cancer Care, Meera Charitable Trust, Dr. Bharat Patodiya, increased ad reach by 70%",
-        "Maintained communication with 10+ clients",
-      ],
-      logoUrl:
-        "https://static.wixstatic.com/media/688008_1a000952caef48cca29502b19b4bca5c~mv2.png/v1/fill/w_605,h_641,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/logog_edited.png",
-    },
-    {
-      company: "Copy.ai",
-      position: "Community Manager",
-      subtitle: "Copy.ai · Internship",
-      duration: "Jan 2023 - Feb 2023 · 2 mos",
-      location: "Remote",
-      responsibilities: [
-        "Moderated community, increased interaction by 150%",
-        "Reported key metrics for decision-making",
-        "Cold messaged 100+ copywriters",
-      ],
-      logoUrl:
-        "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcR5-SCdRCKcDf8Qf3HTcPQtRObLs0cZUiwu3MuE6BxfRANa9_fk",
-    },
-  ];
-
-  const toggleProject = (index: number) => {
-    setExpandedProject(expandedProject === index ? null : index);
-  };
-
-  const toggleInternship = (index: number) => {
-    setExpandedInternship(expandedInternship === index ? null : index);
-  };
-
-
   return (
-    <div className="min-h-screen bg-white text-black relative">
-      <svg className="hidden">
-        <filter id="rough">
-          <feTurbulence
-            type="turbulence"
-            baseFrequency="0.03"
-            numOctaves="3"
-            result="noise"
-          />
-          <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" />
-        </filter>
-      </svg>
+    <motion.nav
+      className="fixed top-0 left-0 right-0 z-50 bg-white/75 backdrop-blur-md border-b border-black/5"
+      animate={{ y: hidden ? "-100%" : "0%" }}
+      transition={{ duration: 0.35, ease }}
+    >
+      <div className="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between">
+        <motion.a
+          href="#about"
+          initial={{ rotate: -180, scale: 0 }}
+          animate={{ rotate: 0, scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 14, delay: 0.1 }}
+          whileHover={{ rotate: 15, scale: 1.1 }}
+        >
+          <img src="/logo.svg" alt="Tilak logo" className="w-10 h-10" />
+        </motion.a>
 
-      <div className="fixed inset-0 grid-background opacity-40"></div>
-
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <a href="#about" className="flex items-center space-x-2">
-              <img src="/logo.svg" alt="Tilak logo" className="w-10 h-10" />
-            </a>
-
-            <div className="hidden lg:flex items-center space-x-7">
-              {NAV.map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="text-base font-medium nav-link relative"
-                >
-                  {item}
-                </a>
-              ))}
-              <a
-                href="/photography"
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-orange-500 transition-colors"
-              >
+        <motion.div
+          className="hidden lg:flex items-center gap-1"
+          initial="hidden"
+          animate="show"
+          variants={staggerParent(0.05, 0.3)}
+        >
+          {NAV.map((item) => (
+            <motion.a
+              key={item}
+              href={`#${slug(item)}`}
+              variants={{ hidden: { opacity: 0, y: -12 }, show: { opacity: 1, y: 0 } }}
+              className={`relative px-3 py-2 text-[15px] font-medium rounded-full transition-colors ${active === slug(item) ? "text-black" : "text-black/60 hover:text-black"}`}
+            >
+              {active === slug(item) && (
+                <motion.span layoutId="nav-pill" className="absolute inset-0 rounded-full bg-green-400/70" transition={{ type: "spring", stiffness: 380, damping: 30 }} />
+              )}
+              <span className="relative">{item}</span>
+            </motion.a>
+          ))}
+          <motion.div variants={{ hidden: { opacity: 0, y: -12 }, show: { opacity: 1, y: 0 } }} className="ml-3">
+            <Magnetic>
+              <a href="/photography" className="flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-sm font-medium hover:bg-orange-500 transition-colors">
                 <Camera className="w-4 h-4" /> Photography
               </a>
-            </div>
+            </Magnetic>
+          </motion.div>
+        </motion.div>
 
-            <button
-              className="lg:hidden p-2 rounded-lg hover:bg-black/5"
-              onClick={() => setMenuOpen((o) => !o)}
-              aria-label={menuOpen ? "Close menu" : "Open menu"}
-              aria-expanded={menuOpen}
-            >
+        <button
+          className="lg:hidden p-2 rounded-lg hover:bg-black/5"
+          onClick={() => setMenuOpen((o) => !o)}
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+        >
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span key={menuOpen ? "x" : "m"} initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} className="block">
               {menuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
-            </button>
-          </div>
-        </div>
+            </motion.span>
+          </AnimatePresence>
+        </button>
+      </div>
+
+      <AnimatePresence>
         {menuOpen && (
-          <div className="lg:hidden border-t border-black/10 bg-white px-4 pb-6 pt-2 flex flex-col">
-            {NAV.map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
-                onClick={() => setMenuOpen(false)}
-                className="py-3 text-lg font-medium border-b border-black/5"
+          <motion.div
+            className="lg:hidden overflow-hidden border-t border-black/10 bg-white"
+            initial={{ height: 0 }}
+            animate={{ height: "auto" }}
+            exit={{ height: 0 }}
+            transition={{ duration: 0.4, ease }}
+          >
+            <motion.div className="px-4 pb-6 pt-2 flex flex-col" initial="hidden" animate="show" variants={staggerParent(0.04, 0.1)}>
+              {NAV.map((item) => (
+                <motion.a
+                  key={item}
+                  href={`#${slug(item)}`}
+                  onClick={() => setMenuOpen(false)}
+                  variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0 } }}
+                  className="py-3 text-2xl font-semibold border-b border-black/5 flex justify-between items-center"
+                >
+                  {item}
+                  <ArrowUpRight className="w-5 h-5 text-black/30" />
+                </motion.a>
+              ))}
+              <motion.a
+                href="/photography"
+                variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }}
+                className="mt-5 flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-black text-white font-medium"
               >
-                {item}
-              </a>
-            ))}
-            <a
-              href="/photography"
-              className="mt-4 flex items-center justify-center gap-2 px-4 py-3 rounded-full bg-black text-white font-medium"
-            >
-              <Camera className="w-4 h-4" /> Photography
-            </a>
-          </div>
+                <Camera className="w-4 h-4" /> Photography
+              </motion.a>
+            </motion.div>
+          </motion.div>
         )}
-      </nav>
+      </AnimatePresence>
+    </motion.nav>
+  );
+}
 
-      <div className="relative z-10" id="about">
-        <Hero />
-        <section className="py-20 px-4" id="education">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold mb-12 text-center">Education</h2>
-            <div className="relative">
-              <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-green-400 timeline-line"></div>
+/* ───────────────────────── education ───────────────────────── */
 
-              <div className="space-y-12">
-                {[
-                  {
-                    school: "SVKM's NMIMS University, Hyderabad",
-                    degree: "Master of Business Administration - MBA",
-                    period: "2026 - 2028",
-                    grade: "CGPA: 8.13/10",
-                  },
-                  {
-                    school: "Aditya Global Business School",
-                    degree: "Bachelor of Business Administration - BBA",
-                    period: "2022 - 2025",
-                    grade: "Grade: 8.62",
-                  },
-                  {
-                    school: "Sasi Junior College",
-                    degree: "Intermediate",
-                    specialization: "MPC",
-                    period: "October 2020 - May 2022",
-                    grade: "Grade: 9.4",
-                  },
-                ].map((education, index) => (
-                  <div
-                    key={index}
-                    className={`relative flex items-center ${
-                      index % 2 === 0 ? "justify-start" : "justify-end"
-                    } timeline-item`}
+function EducationTimeline() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start 75%", "end 55%"] });
+  const line = useSpring(scrollYProgress, { stiffness: 100, damping: 25 });
+
+  return (
+    <div ref={ref} className="relative">
+      <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-[3px] bg-black/10 rounded-full" />
+      <motion.div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 top-0 bottom-0 w-[3px] bg-gradient-to-b from-green-400 to-orange-500 origin-top rounded-full" style={{ scaleY: line }} />
+
+      <div className="space-y-14 md:space-y-20">
+        {education.map((ed, i) => {
+          const left = i % 2 === 0;
+          return (
+            <div key={ed.school} className={`relative flex md:items-center ${left ? "md:justify-start" : "md:justify-end"}`}>
+              {/* dot */}
+              <motion.div
+                className="absolute left-4 md:left-1/2 -translate-x-1/2 top-2 md:top-1/2 md:-translate-y-1/2 z-10"
+                initial={{ scale: 0 }}
+                whileInView={{ scale: 1 }}
+                viewport={{ once: true, amount: 1, margin: "0px 0px -35% 0px" }}
+                transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              >
+                <span className="block w-5 h-5 rounded-full bg-orange-500 ring-4 ring-white" />
+                <motion.span
+                  className="absolute inset-0 rounded-full bg-orange-500"
+                  initial={{ scale: 1, opacity: 0.6 }}
+                  whileInView={{ scale: 3, opacity: 0 }}
+                  viewport={{ once: true, amount: 1, margin: "0px 0px -35% 0px" }}
+                  transition={{ duration: 1.2, ease: "easeOut" }}
+                />
+              </motion.div>
+
+              <motion.div
+                className={`ml-12 md:ml-0 md:w-[44%] ${left ? "md:text-right md:pr-4" : "md:pl-4"}`}
+                initial={{ opacity: 0, x: left ? -60 : 60, filter: "blur(8px)" }}
+                whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.9, ease }}
+              >
+                <span className="font-mono text-xs tracking-widest text-orange-500">{ed.period}</span>
+                <h3 className="text-xl md:text-2xl font-bold mt-1">{ed.school}</h3>
+                <p className="text-base md:text-lg mt-2">
+                  <motion.span
+                    className="[box-decoration-break:clone] [-webkit-box-decoration-break:clone] bg-no-repeat"
+                    style={{ backgroundImage: "linear-gradient(rgba(74,222,128,0.7), rgba(74,222,128,0.7))", backgroundPosition: "0 88%" }}
+                    initial={{ backgroundSize: "0% 45%" }}
+                    whileInView={{ backgroundSize: "100% 45%" }}
+                    viewport={{ once: true, amount: 1 }}
+                    transition={{ duration: 0.8, ease, delay: 0.4 }}
                   >
-                    <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-orange-500 rounded-full timeline-dot"></div>
-
-                    <div
-                      className={`w-5/12 ${index % 2 === 0 ? "pr-8" : "pl-8"}`}
-                    >
-                      <div>
-                        <h3 className="text-xl font-bold">
-                          {education.school}
-                        </h3>
-                        <p className="text-lg mt-1">
-                          <span className="hero-name-highlight">
-                            {education.degree}
-                          </span>
-                          {education.specialization && (
-                            <>
-                              {" "}
-                              -{" "}
-                              <span className="hero-name-highlight">
-                                {education.specialization}
-                              </span>
-                            </>
-                          )}
-                        </p>
-                        <p className="text-sm mt-1">{education.period}</p>
-                        <p className="text-sm font-semibold mt-1">
-                          {education.grade}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    {ed.degree}
+                    {ed.specialization ? ` — ${ed.specialization}` : ""}
+                  </motion.span>
+                </p>
+                <p className="text-sm font-semibold mt-2 text-black/70">{ed.grade}</p>
+              </motion.div>
             </div>
-          </div>
-        </section>
-
-        <section className="py-20 px-4 bg-white" id="experience">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold mb-12 text-center">
-              Work Experience
-            </h2>
-            <div className="space-y-6">
-              {workExperience.map((internship, index) => (
-                <div
-                  key={index}
-                  className="internship-item opacity-0 transform translate-y-10 transition-all duration-500 ease-out"
-                  onClick={() => setExpandedWork(expandedWork === index ? null : index)}
-                >
-                  <div className="sketch-border bg-white p-6 rounded-lg cursor-pointer">
-                    <div className="flex items-start gap-4">
-                      <div className="w-16 h-16 flex-shrink-0">
-                        <div className="w-full h-full relative sketch-border rounded-lg overflow-hidden">
-                          <img
-                            src={internship.logoUrl}
-                            alt={`${internship.company} logo`}
-                            className="w-full h-full object-contain p-2 sketch-image"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex-grow">
-                        <h3 className="text-xl font-bold">
-                          {internship.company}
-                        </h3>
-                        <p className="text-lg hero-name-highlight">
-                          {internship.position}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {internship.subtitle}
-                        </p>
-                        <p className="text-sm">{internship.duration}</p>
-                        <p className="text-sm orange-glow">
-                          {internship.location}
-                        </p>
-                      </div>
-                      <ChevronDown
-                        className={`w-6 h-6 flex-shrink-0 transform transition-transform duration-300 ${
-                          expandedWork === index ? "rotate-180" : ""
-                        }`}
-                      />
-                    </div>
-
-                    <div
-                      className={`mt-4 overflow-hidden transition-all duration-300 ${
-                        expandedWork === index ? "max-h-96" : "max-h-0"
-                      }`}
-                    >
-                      <div className="pt-4 border-t border-gray-200">
-                        <h4 className="font-bold mb-2">Responsibilities:</h4>
-                        <ul className="space-y-2 text-justify">
-                          {internship.responsibilities.map(
-                            (responsibility, idx) => (
-                              <li key={idx} className="flex items-start gap-2">
-                                <span className="w-2 h-2 mt-2 bg-green-400 rounded-full flex-shrink-0"></span>
-                                <span>{responsibility}</span>
-                              </li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-20 px-4 bg-white" id="internships">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold mb-12 text-center">
-              Internships
-            </h2>
-            <div className="space-y-6">
-              {internships.map((internship, index) => (
-                <div
-                  key={index}
-                  className="internship-item opacity-0 transform translate-y-10 transition-all duration-500 ease-out"
-                  onClick={() => toggleInternship(index)}
-                >
-                  <div className="sketch-border bg-white p-6 rounded-lg cursor-pointer">
-                    <div className="flex items-start gap-4">
-                      <div className="w-16 h-16 flex-shrink-0">
-                        <div className="w-full h-full relative sketch-border rounded-lg overflow-hidden">
-                          <img
-                            src={internship.logoUrl}
-                            alt={`${internship.company} logo`}
-                            className="w-full h-full object-contain p-2 sketch-image"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex-grow">
-                        <h3 className="text-xl font-bold">
-                          {internship.company}
-                        </h3>
-                        <p className="text-lg hero-name-highlight">
-                          {internship.position}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          {internship.subtitle}
-                        </p>
-                        <p className="text-sm">{internship.duration}</p>
-                        <p className="text-sm orange-glow">
-                          {internship.location}
-                        </p>
-                      </div>
-                      <ChevronDown
-                        className={`w-6 h-6 flex-shrink-0 transform transition-transform duration-300 ${
-                          expandedInternship === index ? "rotate-180" : ""
-                        }`}
-                      />
-                    </div>
-
-                    <div
-                      className={`mt-4 overflow-hidden transition-all duration-300 ${
-                        expandedInternship === index ? "max-h-96" : "max-h-0"
-                      }`}
-                    >
-                      <div className="pt-4 border-t border-gray-200">
-                        <h4 className="font-bold mb-2">Responsibilities:</h4>
-                        <ul className="space-y-2 text-justify">
-                          {internship.responsibilities.map(
-                            (responsibility, idx) => (
-                              <li key={idx} className="flex items-start gap-2">
-                                <span className="w-2 h-2 mt-2 bg-green-400 rounded-full flex-shrink-0"></span>
-                                <span>{responsibility}</span>
-                              </li>
-                            )
-                          )}
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-20 px-4" id="skills">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl font-bold mb-12 text-center">Skills</h2>
-            <div className="skills-container">
-              {skills.map((skill, index) => (
-                <div
-                  key={index}
-                  className="skill-item"
-                                  >
-                  <div className="skill-cube">
-                    <div className="skill-cube-face front">
-                      <span className="text-sm font-medium">{skill}</span>
-                    </div>
-                    <div className="skill-cube-face back"></div>
-                    <div className="skill-cube-face right"></div>
-                    <div className="skill-cube-face left"></div>
-                    <div className="skill-cube-face top"></div>
-                    <div className="skill-cube-face bottom"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-20 px-4 bg-white/50" id="projects">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl font-bold mb-12 text-center">Projects</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {projects.map((project, index) => (
-                <div
-                  key={index}
-                  className="project-item opacity-0 transform translate-y-10 transition-all duration-500 ease-out"
-                  onClick={() => toggleProject(index)}
-                >
-                  <div className="sketch-border bg-white p-6 rounded-lg cursor-pointer project-card">
-                    <h3 className="text-2xl font-bold mb-3">{project.name}</h3>
-                    <p className="text-lg hero-name-highlight mb-2">
-                      {project.details}
-                    </p>
-                    <p className="text-sm mb-2">{project.timeline}</p>
-                    <p className="text-sm orange-glow mb-4">
-                      {project.location}
-                    </p>
-
-                    <div
-                      className={`overflow-hidden transition-all duration-300 ${
-                        expandedProject === index ? "max-h-[500px]" : "max-h-24"
-                      }`}
-                    >
-                      <p className="text-base leading-relaxed">
-                        {project.description}
-                      </p>
-                    </div>
-
-                    <button className="mt-4 flex items-center gap-2 text-sm font-medium orange-glow hover:text-green-500 transition-colors">
-                      {expandedProject === index ? "Show Less" : "Read More"}
-                      <ChevronDown
-                        className={`w-4 h-4 transform transition-transform duration-300 ${
-                          expandedProject === index ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <ProofOfWork />
-
-        <footer className="py-20 px-4" id="contact-me">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl font-bold mb-6">Let's Connect</h2>
-            <p className="text-xl mb-8">
-              Have a project in mind? Let's create something amazing together.
-            </p>
-            <a
-              href="mailto:pasupureddytilak@gmail.com"
-              className="sketch-border inline-block py-3 px-8 rounded-lg text-lg font-bold hover:scale-110 transition-transform orange-glow"
-            >
-              Get in Touch
-            </a>
-          </div>
-        </footer>
+          );
+        })}
       </div>
     </div>
   );
 }
 
-export default App;
+/* ───────────────────────── jobs ───────────────────────── */
 
-if (import.meta.env.MODE === "development" && import.meta.hot) {
-  import.meta.hot.accept();
+function JobCard({ job, open, onToggle }: { job: Job; open: boolean; onToggle: () => void }) {
+  const mx = useMotionValue(-200);
+  const my = useMotionValue(-200);
+  const spot = useMotionTemplate`radial-gradient(360px circle at ${mx}px ${my}px, rgba(74,222,128,0.16), transparent 60%)`;
+
+  return (
+    <motion.div variants={riseChild} style={{ transformPerspective: 1000 }}>
+      <motion.div
+        layout
+        onClick={onToggle}
+        onPointerMove={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          mx.set(e.clientX - r.left);
+          my.set(e.clientY - r.top);
+        }}
+        onPointerLeave={() => {
+          mx.set(-200);
+          my.set(-200);
+        }}
+        whileHover={{ y: -4 }}
+        transition={{ layout: { duration: 0.45, ease } }}
+        className={`group relative overflow-hidden rounded-2xl border-2 bg-white p-5 md:p-6 cursor-pointer transition-[border-color,box-shadow] duration-300 ${
+          open ? "border-black shadow-[6px_6px_0_#4ade80]" : "border-black/10 hover:border-black hover:shadow-[6px_6px_0_#000]"
+        }`}
+      >
+        <motion.div className="pointer-events-none absolute inset-0" style={{ background: spot }} />
+        <motion.span
+          className="absolute left-0 top-0 bottom-0 w-1.5 bg-green-400 origin-top"
+          initial={false}
+          animate={{ scaleY: open ? 1 : 0 }}
+          transition={{ duration: 0.5, ease }}
+        />
+        <motion.div layout="position" className="relative flex items-start gap-4">
+          <motion.div
+            className="w-14 h-14 md:w-16 md:h-16 flex-shrink-0 rounded-xl border border-black/10 bg-white overflow-hidden"
+            animate={{ rotate: open ? -6 : 0, scale: open ? 1.05 : 1 }}
+            transition={{ type: "spring", stiffness: 260, damping: 15 }}
+          >
+            <img src={job.logoUrl} alt={`${job.company} logo`} className="w-full h-full object-contain p-2" />
+          </motion.div>
+          <div className="flex-grow min-w-0">
+            <h3 className="text-lg md:text-xl font-bold">{job.company}</h3>
+            <p className="text-base md:text-lg font-medium">{job.position}</p>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-sm text-black/60">
+              <span className="flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5" />
+                {job.duration}
+              </span>
+              <span className="flex items-center gap-1.5 text-orange-500">
+                <MapPin className="w-3.5 h-3.5" />
+                {job.location}
+              </span>
+            </div>
+          </div>
+          <motion.span
+            className="grid place-items-center w-9 h-9 rounded-full border border-black/15 flex-shrink-0 group-hover:bg-black group-hover:text-white transition-colors"
+            animate={{ rotate: open ? 180 : 0 }}
+            transition={{ type: "spring", stiffness: 260, damping: 18 }}
+          >
+            <ChevronDown className="w-5 h-5" />
+          </motion.span>
+        </motion.div>
+
+        <AnimatePresence initial={false}>
+          {open && (
+            <motion.div
+              key="body"
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.45, ease }}
+              className="relative overflow-hidden"
+            >
+              <motion.ul className="pt-5 mt-5 border-t border-black/10 space-y-3" initial="hidden" animate="show" variants={staggerParent(0.06, 0.1)}>
+                {job.responsibilities.map((r) => (
+                  <motion.li
+                    key={r}
+                    className="flex items-start gap-3"
+                    variants={{ hidden: { opacity: 0, x: -16 }, show: { opacity: 1, x: 0, transition: { duration: 0.4, ease } } }}
+                  >
+                    <span className="w-2 h-2 mt-2 bg-green-400 rounded-full flex-shrink-0" />
+                    <span className="text-black/80">{r}</span>
+                  </motion.li>
+                ))}
+              </motion.ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    </motion.div>
+  );
 }
+
+function JobList({ jobs }: { jobs: Job[] }) {
+  const [open, setOpen] = useState<number | null>(null);
+  return (
+    <motion.div className="space-y-5" initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }} variants={staggerParent(0.12)}>
+      {jobs.map((job, i) => (
+        <JobCard key={job.company} job={job} open={open === i} onToggle={() => setOpen(open === i ? null : i)} />
+      ))}
+    </motion.div>
+  );
+}
+
+/* ───────────────────────── skills ───────────────────────── */
+
+function SkillsBand() {
+  const top = skillGroups.slice(0, 3).flatMap((g) => g.skills.slice(0, 5));
+  const row = (items: string[], reverse: boolean, outline: boolean) => (
+    <div className="flex overflow-hidden" aria-hidden>
+      <div className="flex shrink-0 gap-8 pr-8 animate-marquee whitespace-nowrap" style={{ animationDuration: "45s", animationDirection: reverse ? "reverse" : "normal" }}>
+        {[...items, ...items, ...items, ...items].map((s, i) => (
+          <span key={i} className={`text-3xl md:text-5xl font-bold ${outline ? "text-transparent hero-outline" : "text-black"}`}>
+            {s} <span className="text-green-400">✦</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+  return (
+    <div className="relative -mx-4 py-6 my-4 -rotate-2 bg-green-400 border-y-2 border-black overflow-hidden">
+      {row(top, false, false)}
+      <div className="h-3" />
+      {row([...top].reverse(), true, true)}
+    </div>
+  );
+}
+
+function SkillChip({ skill }: { skill: string }) {
+  return (
+    <motion.span
+      variants={{
+        hidden: { opacity: 0, scale: 0.5, y: 20, rotate: -8 },
+        show: { opacity: 1, scale: 1, y: 0, rotate: 0, transition: { type: "spring", stiffness: 300, damping: 18 } },
+      }}
+      whileHover={{ y: -4, rotate: -2 }}
+      className="group relative inline-flex overflow-hidden rounded-full border-2 border-black px-4 py-2 text-sm font-medium bg-white cursor-default shadow-[3px_3px_0_#000]"
+    >
+      <span className="absolute inset-0 bg-green-400 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+      <span className="relative">{skill}</span>
+    </motion.span>
+  );
+}
+
+function Skills() {
+  return (
+    <div>
+      <SkillsBand />
+      <div className="max-w-6xl mx-auto mt-16 grid md:grid-cols-2 gap-x-12 gap-y-12">
+        {skillGroups.map((g, gi) => (
+          <motion.div
+            key={g.title}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={staggerParent(0.04)}
+            className={gi === 0 ? "md:col-span-2" : ""}
+          >
+            <motion.h3
+              className="flex items-center gap-3 text-sm font-mono tracking-[0.25em] uppercase text-black/50 mb-5"
+              variants={{ hidden: { opacity: 0, x: -20 }, show: { opacity: 1, x: 0 } }}
+            >
+              <span className="text-orange-500">0{gi + 1}</span> {g.title}
+              {gi === 0 && <span className="ml-1 px-2 py-0.5 rounded-full bg-black text-white text-[10px] tracking-widest">NEW</span>}
+            </motion.h3>
+            <div className="flex flex-wrap gap-3">
+              {g.skills.map((s) => (
+                <SkillChip key={s} skill={s} />
+              ))}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ───────────────────────── projects ───────────────────────── */
+
+function ProjectCard({ p, i }: { p: Project; i: number }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <motion.div variants={riseChild} className="h-full">
+      <TiltCard className="h-full rounded-3xl">
+        <motion.div
+          layout
+          transition={{ layout: { duration: 0.45, ease } }}
+          onClick={() => setOpen((o) => !o)}
+          className="h-full rounded-3xl border-2 border-black bg-white p-6 md:p-7 cursor-pointer shadow-[6px_6px_0_#000] hover:shadow-[10px_10px_0_#4ade80] transition-shadow duration-300 flex flex-col"
+        >
+          <motion.div layout="position" className="flex items-start justify-between">
+            <span className="font-mono text-5xl font-bold text-black/10">{String(i + 1).padStart(2, "0")}</span>
+            <span className="text-xs font-mono tracking-widest text-orange-500 text-right max-w-[60%]">{p.location}</span>
+          </motion.div>
+          <motion.h3 layout="position" className="text-2xl font-bold mt-2">
+            {p.name}
+          </motion.h3>
+          <motion.p layout="position" className="mt-2">
+            <span className="bg-green-400/70 px-1.5">{p.details}</span>
+          </motion.p>
+          <motion.p layout="position" className="text-sm text-black/60 mt-3 flex items-center gap-1.5">
+            <Calendar className="w-3.5 h-3.5" /> {p.timeline}
+          </motion.p>
+          <motion.div layout className="relative mt-4 overflow-hidden" animate={{ height: open ? "auto" : 72 }} transition={{ duration: 0.5, ease }}>
+            <p className="leading-relaxed text-black/80">{p.description}</p>
+            <motion.div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white to-transparent pointer-events-none" animate={{ opacity: open ? 0 : 1 }} />
+          </motion.div>
+          <motion.span layout="position" className="mt-auto pt-4 inline-flex items-center gap-2 text-sm font-semibold text-orange-500">
+            {open ? "Show less" : "Read more"}
+            <motion.span animate={{ rotate: open ? 180 : 0 }}>
+              <ChevronDown className="w-4 h-4" />
+            </motion.span>
+          </motion.span>
+        </motion.div>
+      </TiltCard>
+    </motion.div>
+  );
+}
+
+/* ───────────────────────── page ───────────────────────── */
+
+function App() {
+  return (
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen bg-white text-black relative overflow-x-clip">
+        <ScrollProgress />
+        <div className="fixed inset-0 grid-background opacity-40 pointer-events-none" />
+        <Nav />
+
+        <div className="relative z-10">
+          <section id="about">
+            <Hero />
+          </section>
+
+          <section className="py-24 px-4" id="education">
+            <div className="max-w-5xl mx-auto">
+              <SectionHeading index="01" kicker="Where I learnt" title="Education" />
+              <EducationTimeline />
+            </div>
+          </section>
+
+          <section className="py-24 px-4" id="experience">
+            <div className="max-w-4xl mx-auto">
+              <SectionHeading index="02" kicker="Where I work" title="Work Experience" />
+              <JobList jobs={workExperience} />
+            </div>
+          </section>
+
+          <section className="py-24 px-4" id="internships">
+            <div className="max-w-4xl mx-auto">
+              <SectionHeading index="03" kicker="Where I started" title="Internships" />
+              <JobList jobs={internships} />
+            </div>
+          </section>
+
+          <section className="py-24 px-4 overflow-hidden" id="skills">
+            <SectionHeading index="04" kicker="What I bring" title="Skills" />
+            <Skills />
+          </section>
+
+          <section className="py-24 px-4" id="projects">
+            <div className="max-w-7xl mx-auto">
+              <SectionHeading index="05" kicker="What I've built" title="Projects" />
+              <motion.div
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start"
+                initial="hidden"
+                whileInView="show"
+                viewport={{ once: true, amount: 0.15 }}
+                variants={staggerParent(0.12)}
+              >
+                {projects.map((p, i) => (
+                  <ProjectCard key={p.name + p.details} p={p} i={i} />
+                ))}
+              </motion.div>
+            </div>
+          </section>
+
+          <ProofOfWork />
+
+          <footer className="py-28 px-4 overflow-hidden" id="contact-me">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-5xl md:text-7xl font-bold tracking-tight">
+                <SplitReveal text="Let's Connect" />
+              </h2>
+              <motion.p
+                className="text-xl mt-6 mb-10 text-black/70"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, ease, delay: 0.4 }}
+              >
+                Have a project in mind? Let's create something amazing together.
+              </motion.p>
+              <motion.div initial={{ opacity: 0, scale: 0.6 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ type: "spring", stiffness: 200, damping: 14, delay: 0.6 }}>
+                <Magnetic strength={0.4}>
+                  <a
+                    href="mailto:pasupureddytilak@gmail.com"
+                    className="inline-flex items-center gap-3 py-4 px-9 rounded-full text-lg font-bold bg-black text-white hover:bg-green-400 hover:text-black transition-colors"
+                  >
+                    Get in Touch <ArrowUpRight className="w-5 h-5" />
+                  </a>
+                </Magnetic>
+              </motion.div>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </MotionConfig>
+  );
+}
+
+export default App;

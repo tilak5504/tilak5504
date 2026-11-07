@@ -379,3 +379,10 @@ html {
 .reel-scroll::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); }
 .darkroom ::selection { background: #f97316; color: #000; }
 .animate-grain { inset: -50%; width: 200%; height: 200%; }
+
+.hero-outline { -webkit-text-stroke: 1.5px rgba(0,0,0,0.18); }
+.bg-green-400 .hero-outline { -webkit-text-stroke: 1.5px #000; }
+.animate-spin-slow { transform-box: fill-box; transform-origin: center; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee, .animate-spin-slow { animation: none; }
+}

@@ -367,7 +367,7 @@ export default function ProofOfWork() {
         </div>
 
         {/* tabs */}
-        <div className="sticky top-[72px] z-30 -mx-4 px-4 py-3 mb-8 bg-black/80 backdrop-blur border-b border-white/10">
+        <div className="sticky top-0 z-30 -mx-4 px-4 py-3 mb-8 bg-black/80 backdrop-blur border-b border-white/10">
           <div className="flex gap-2 overflow-x-auto no-scrollbar justify-start md:justify-center">
             {TABS.map((t) => (
               <button

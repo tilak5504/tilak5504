@@ -35,5 +35,33 @@ export const videos: Video[] = [
   { id: "jXGHHk7ZOPI", title: "Acuvate Podcast · Ep 2", subtitle: "Produced & directed", kind: "Podcast" },
 ];
 
+export type Blog = {
+  title: string;
+  publisher: string;
+  date: string;
+  summary: string;
+  url: string;
+  image: string;
+};
+
+export const blogs: Blog[] = [
+  {
+    title: "From a Picker Role to a Store Manager at Swiggy: Meet Pritam Chakraborty",
+    publisher: "Swiggy",
+    date: "May 2025",
+    summary: "A Swiggster growth story: how Pritam rose from Instamart pod picker to store manager in about three years.",
+    url: "https://blog.swiggy.com/life-at-swiggy/from-a-picker-role-to-a-store-manager-at-swiggy-meet-pritam-chakraborty/",
+    image: "https://blog.swiggy.com/wp-content/uploads/2025/05/Pritam-Blog-Creative-1.2-1-1.png",
+  },
+  {
+    title: "Tableau to Power BI Migration: Benefits, Challenges & Best Practices",
+    publisher: "Acuvate",
+    date: "Feb 2025",
+    summary: "Why companies are moving from Tableau to Power BI, and best practices for a smooth switch.",
+    url: "https://acuvate.com/blog/tableau-to-power-bi-migration/",
+    image: "https://acuvate.com/wp-content/uploads/2024/05/Tableau-to-PowerBi-Migration.webp",
+  },
+];
+
 export type Poster = (typeof posters)[number];
 export { posters };

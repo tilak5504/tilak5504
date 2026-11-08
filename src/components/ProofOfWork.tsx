@@ -13,13 +13,15 @@ import {
   Palette,
   Mic,
   Camera,
+  PenLine,
 } from "lucide-react";
-import { posters, reels, videos, type Reel } from "../data/work";
+import { blogs, posters, reels, videos, type Blog, type Reel } from "../data/work";
 
 const TABS = [
   { id: "all", label: "All", icon: null },
   { id: "reels", label: "Reels", icon: Film },
   { id: "design", label: "Design", icon: Palette },
+  { id: "writing", label: "Writing", icon: PenLine },
   { id: "video", label: "Podcasts & Film", icon: Mic },
 ] as const;
 type TabId = (typeof TABS)[number]["id"];
@@ -293,6 +295,47 @@ function DesignGallery() {
   );
 }
 
+/* ───────────────────────── writing ───────────────────────── */
+
+function BlogCard({ b }: { b: Blog }) {
+  const [broken, setBroken] = useState(false);
+  return (
+    <a
+      href={b.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex flex-col rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] hover:border-green-400/60 hover:bg-white/[0.06] hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(74,222,128,0.2)] transition-all duration-300"
+    >
+      <div className="relative aspect-[1.91/1] overflow-hidden bg-gradient-to-br from-green-400/30 via-neutral-900 to-orange-500/30">
+        {!broken ? (
+          <img
+            src={b.image}
+            alt=""
+            loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={() => setBroken(true)}
+            className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
+          />
+        ) : (
+          <span className="absolute inset-0 grid place-items-center text-white/80 text-2xl font-bold">{b.publisher}</span>
+        )}
+        <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur text-white text-xs font-medium">
+          {b.publisher}
+        </span>
+      </div>
+      <div className="p-5 flex flex-col flex-1">
+        <p className="text-xs text-white/40">{b.date}</p>
+        <h4 className="text-white font-semibold text-lg leading-snug mt-1 group-hover:text-green-400 transition-colors">{b.title}</h4>
+        <p className="text-white/60 text-sm mt-2">{b.summary}</p>
+        <span className="mt-auto pt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-orange-500">
+          Read article
+          <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+        </span>
+      </div>
+    </a>
+  );
+}
+
 /* ───────────────────────── YouTube ───────────────────────── */
 
 function YouTubeLite({ id, title }: { id: string; title: string }) {
@@ -377,6 +420,17 @@ export default function ProofOfWork() {
             <div>
               <SectionTitle icon={Palette} title="Design" note={`${posters.length} designs`} />
               <DesignGallery />
+            </div>
+          )}
+
+          {show("writing") && (
+            <div>
+              <SectionTitle icon={PenLine} title="Writing" note="Blogs I've worked on" />
+              <div className="grid md:grid-cols-2 gap-5 max-w-5xl">
+                {blogs.map((b) => (
+                  <BlogCard key={b.url} b={b} />
+                ))}
+              </div>
             </div>
           )}
 

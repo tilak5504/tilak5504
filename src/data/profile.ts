@@ -153,14 +153,6 @@ export const projects: Project[] = [
       "Benchmarking 15 auto-accessory categories worth ₹1,687 Cr+ in stated TAM, analysing competitive pricing, product breadth, packaging trends and promotional strategies. Building a virality playbook for Amazon and Flipkart, with share-worthy product, packaging and unboxing concepts for car fresheners, dashboard décor and showpieces.",
   },
   {
-    name: "Media Head",
-    details: "AADIT 2024 · College Fest",
-    timeline: "2024",
-    location: "Position of Responsibility",
-    description:
-      "Produced and edited 6-7 reels for a nationwide college fest, reaching 100k+ views and expanding the event's reach across social media. Drove a 400% increase in the fest account's engagement.",
-  },
-  {
     name: "Videographer",
     details: "The Staid App · Freelance",
     timeline: "August 2024 - September 2024 · 2 months",

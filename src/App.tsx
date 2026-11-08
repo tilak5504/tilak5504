@@ -382,10 +382,10 @@ function ProjectCard({ p, i }: { p: Project; i: number }) {
           layout
           transition={{ layout: { duration: 0.45, ease } }}
           onClick={() => setOpen((o) => !o)}
-          className="h-full rounded-2xl border border-black/10 bg-white p-6 md:p-7 cursor-pointer shadow-sm hover:-translate-y-2 hover:border-green-400 hover:shadow-[0_0_20px_rgba(74,222,128,0.3)] transition-all duration-300 flex flex-col"
+          className="group h-full rounded-2xl border border-black/10 bg-white p-6 md:p-7 cursor-pointer shadow-sm hover:-translate-y-2 hover:border-green-400 hover:shadow-[0_0_20px_rgba(74,222,128,0.3)] transition-all duration-300 flex flex-col"
         >
           <motion.div layout="position" className="flex items-start justify-between">
-            <span className="font-mono text-5xl font-bold text-black/10">{String(i + 1).padStart(2, "0")}</span>
+            <span className="font-mono text-5xl font-bold text-black/10 transition-all duration-300 group-hover:text-green-400 group-hover:[text-shadow:0_0_18px_rgba(74,222,128,0.7)]">{String(i + 1).padStart(2, "0")}</span>
             <span className="text-xs font-mono tracking-widest text-orange-500 text-right max-w-[60%]">{p.location}</span>
           </motion.div>
           <motion.h3 layout="position" className="text-2xl font-bold mt-2">
@@ -457,7 +457,7 @@ function App() {
             <div className="max-w-7xl mx-auto">
               <SectionHeading index="05" kicker="What I've built" title="Projects" />
               <motion.div
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-start"
+                className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start max-w-5xl mx-auto"
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true, amount: 0.15 }}

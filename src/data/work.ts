@@ -61,6 +61,14 @@ export const blogs: Blog[] = [
     url: "https://acuvate.com/blog/tableau-to-power-bi-migration/",
     image: "https://acuvate.com/wp-content/uploads/2024/05/Tableau-to-PowerBi-Migration.webp",
   },
+  {
+    title: "Unlock the Full Potential of Your Data with AcuPrism",
+    publisher: "Acuvate",
+    date: "Jan 2025",
+    summary: "A product blog introducing AcuPrism, Acuvate's enterprise data platform for Databricks and Microsoft Fabric.",
+    url: "https://acuvate.com/blog/scalable-seamless-data-platform-acuprism/",
+    image: "https://acuvate.com/wp-content/uploads/2025/01/Unlock-the-Full-Potential-of-Your-Data-with-Acuprism.webp",
+  },
 ];
 
 export type Poster = (typeof posters)[number];

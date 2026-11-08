@@ -426,7 +426,7 @@ export default function ProofOfWork() {
           {show("writing") && (
             <div>
               <SectionTitle icon={PenLine} title="Writing" note="Blogs I've worked on" />
-              <div className="grid md:grid-cols-2 gap-5 max-w-5xl">
+              <div className="grid md:grid-cols-3 gap-5">
                 {blogs.map((b) => (
                   <BlogCard key={b.url} b={b} />
                 ))}

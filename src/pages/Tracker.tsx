@@ -64,6 +64,9 @@ const slugify = (s: string) =>
     .replace(/^-+|-+$/g, "")
     .slice(0, 60);
 
+/* "priya-swiggy" → "Priya Swiggy" for links you typed yourself */
+const pretty = (slug: string) => slug.split("-").filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(" ");
+
 function ago(t: number) {
   const s = Math.round((Date.now() - t) / 1000);
   if (s < 60) return "just now";
@@ -268,9 +271,9 @@ function PersonRow({
       <button onClick={() => setOpen((o) => !o)} className="w-full text-left p-4 md:p-5 grid grid-cols-[auto_1fr_auto] md:grid-cols-[auto_1.4fr_1fr_1fr_auto] gap-x-4 gap-y-1 items-center">
         <span className={`w-3 h-3 rounded-full ${opened ? "bg-green-400 shadow-[0_0_10px_#4ade80]" : "bg-black/15"}`} />
         <span className="min-w-0">
-          <span className="block font-semibold truncate">{link?.name || slug}</span>
+          <span className="block font-semibold truncate">{link?.name || pretty(slug)}</span>
           <span className="block text-sm text-black/50 truncate">
-            {[link?.company, link?.channel].filter(Boolean).join(" · ") || (link ? "" : "link not saved here")}
+            {link ? [link.company, link.channel].filter(Boolean).join(" · ") : `/to/${slug}`}
           </span>
         </span>
         <span className="hidden md:block text-sm">
@@ -488,7 +491,7 @@ export default function Tracker() {
     .sort((a, b) => (b.s?.last || 0) - (a.s?.last || 0) || (b.link?.created || 0) - (a.link?.created || 0))
     .filter((r) => filter === "all" || (filter === "opened" ? r.s?.sessions : !r.s?.sessions));
 
-  const saved = Object.keys(links);
+  const saved = slugs; // links made here + links you typed yourself
   const openedCount = saved.filter((k) => summary.get(k)?.sessions).length;
   const others = summary.get("");
   const allSessions = new Set(data.visits.filter((v) => v.type === "open").map((v) => v.sid)).size;
@@ -530,7 +533,7 @@ export default function Tracker() {
 
         {/* stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-8">
-          <Stat label="Links sent" value={String(saved.length)} />
+          <Stat label="People" value={String(saved.length)} />
           <Stat label="Opened" value={String(openedCount)} sub={saved.length ? `${Math.round((openedCount / saved.length) * 100)}% open rate` : undefined} accent />
           <Stat label="All visits" value={String(allSessions)} sub={others?.sessions ? `${others.sessions} without a personal link` : undefined} />
           <Stat label="Time on site" value={dur(totalSecs)} sub="all visitors" />
@@ -541,7 +544,10 @@ export default function Tracker() {
           <h2 className="text-xl font-bold flex items-center gap-2">
             <Link2 className="w-5 h-5 text-green-500" /> Make a personal link
           </h2>
-          <p className="text-sm text-black/50 mt-1">The person sees your normal portfolio. The link quietly tells you it was them.</p>
+          <p className="text-sm text-black/50 mt-1">
+            The person sees your normal portfolio. The link quietly tells you it was them. Shortcut: you can skip this and just type any name after{" "}
+            <span className="font-mono text-black/70">/to/</span>, like <span className="font-mono text-black/70">{base.replace(/^https?:\/\//, "")}/to/rahul-zomato</span>. It shows up here once they open it.
+          </p>
           <form
             onSubmit={(e) => {
               e.preventDefault();

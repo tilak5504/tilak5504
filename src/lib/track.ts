@@ -54,9 +54,20 @@ export function initTracking(): string {
   let path = location.pathname.replace(/\/+$/, "") || "/";
 
   // personal link: /to/<name>  (also accepts ?ref=<name>)
-  const m = path.match(/^\/to\/([a-z0-9-]{1,80})$/i);
+  // accepts anything typed after /to/ — spaces, _, capitals, dots all become dashes
+  const m = path.match(/^\/to\/([^/]{1,120})$/i);
   const q = new URLSearchParams(location.search).get("ref");
-  const incoming = (m?.[1] || q || "").toLowerCase().replace(/[^a-z0-9-]/g, "");
+  let raw = m?.[1] || q || "";
+  try {
+    raw = decodeURIComponent(raw);
+  } catch {
+    /* keep as is */
+  }
+  const incoming = raw
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
   if (incoming) store("tk_ref", incoming);
   if (m) {
     // show the visitor a clean address

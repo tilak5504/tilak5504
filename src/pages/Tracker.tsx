@@ -273,7 +273,7 @@ function PersonRow({
         <span className="min-w-0">
           <span className="block font-semibold truncate">{link?.name || pretty(slug)}</span>
           <span className="block text-sm text-black/50 truncate">
-            {link ? [link.company, link.channel].filter(Boolean).join(" · ") : `/to/${slug}`}
+            {link ? [link.company, link.channel].filter(Boolean).join(" · ") : `/${slug}`}
           </span>
         </span>
         <span className="hidden md:block text-sm">
@@ -505,7 +505,7 @@ export default function Tracker() {
     while (links[slug]) slug = `${slugify([name, form.company].filter(Boolean).join(" "))}-${n++}`;
     const r = await api("POST", { slug, name, company: form.company.trim(), channel: form.channel });
     if (r?.ok) {
-      setMade(`${base}/to/${slug}`);
+      setMade(`${base}/${slug}`);
       setForm((f) => ({ ...f, name: "", company: "" }));
       load();
     }
@@ -545,8 +545,8 @@ export default function Tracker() {
             <Link2 className="w-5 h-5 text-green-500" /> Make a personal link
           </h2>
           <p className="text-sm text-black/50 mt-1">
-            The person sees your normal portfolio. The link quietly tells you it was them. Shortcut: you can skip this and just type any name after{" "}
-            <span className="font-mono text-black/70">/to/</span>, like <span className="font-mono text-black/70">{base.replace(/^https?:\/\//, "")}/to/rahul-zomato</span>. It shows up here once they open it.
+            The person sees your normal portfolio. The link quietly tells you it was them. Shortcut: skip this and just type any name after your address, like{" "}
+            <span className="font-mono text-black/70">{base.replace(/^https?:\/\//, "")}/rahul-zomato</span>. It shows up here once they open it.
           </p>
           <form
             onSubmit={(e) => {
@@ -604,7 +604,7 @@ export default function Tracker() {
                   slug={r.slug}
                   link={r.link}
                   s={r.s}
-                  url={`${base}/to/${r.slug}`}
+                  url={`${base}/${r.slug}`}
                   onDelete={async () => {
                     await api("DELETE", { slug: r.slug });
                     load();

@@ -1,4 +1,4 @@
-// Visit tracking for personal links like  /to/priya-swiggy
+// Visit tracking for personal links like  /priya-swiggy  (or /to/priya-swiggy)
 // - records that the link was opened, which sections were seen,
 //   what was clicked, and roughly how long they stayed
 // - never runs for you: opening /tracker once marks this browser as "owner"
@@ -55,7 +55,11 @@ export function initTracking(): string {
 
   // personal link: /to/<name>  (also accepts ?ref=<name>)
   // accepts anything typed after /to/ — spaces, _, capitals, dots all become dashes
-  const m = path.match(/^\/to\/([^/]{1,120})$/i);
+  // short form: /priya   (anything that isn't one of the site's own pages)
+  // long form:  /to/priya
+  const RESERVED = new Set(["photography", "tracker", "to", "api", "assets", "work"]);
+  const short = path.match(/^\/([^/.]{1,120})$/);
+  const m = path.match(/^\/to\/([^/]{1,120})$/i) || (short && !RESERVED.has(short[1].toLowerCase()) ? short : null);
   const q = new URLSearchParams(location.search).get("ref");
   let raw = m?.[1] || q || "";
   try {

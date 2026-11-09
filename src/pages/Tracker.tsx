@@ -479,7 +479,8 @@ export default function Tracker() {
   }, [data, load]);
 
   const summary = useMemo(() => (data ? summarise(data.visits) : new Map()), [data]);
-  const base = typeof window !== "undefined" ? window.location.origin : "";
+  // personal links always use your short address, whichever address you opened the tracker on
+  const base = "https://tilakp.vercel.app";
 
   if (setup) return <Setup {...setup} />;
   if (!data) return <Login onSubmit={(p) => load(p)} error={error} busy={busy} />;
